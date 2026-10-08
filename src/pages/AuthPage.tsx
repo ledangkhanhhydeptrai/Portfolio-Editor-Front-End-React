@@ -6,7 +6,7 @@ import { useLogin } from "../hooks/useLogin";
 const readField = (data: FormData, key: string): string =>
   String(data.get(key) ?? "");
 
-const LoginPage: React.FC = () => {
+const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const loginMutation = useLogin();
 
@@ -132,4 +132,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default AuthPage;
