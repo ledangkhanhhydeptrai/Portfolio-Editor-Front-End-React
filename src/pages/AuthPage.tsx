@@ -27,7 +27,6 @@ const AuthPage: React.FC = () => {
       }
     );
   };
-
   const fieldClass =
     "w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10";
 
