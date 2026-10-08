@@ -19,6 +19,8 @@ const AuthPage: React.FC = () => {
       {
         email: readField(data, "email"),
         password: readField(data, "password"),
+        email,
+        password,
       },
       {
         onSuccess: () => {
@@ -40,7 +42,9 @@ const AuthPage: React.FC = () => {
               P
             </div>
 
-            <h1 className="text-2xl font-bold text-slate-900">Đăng nhập</h1>
+            <h1 className="text-2xl font-bold text-slate-900">
+              Đăng nhập
+            </h1>
 
             <p className="mt-2 text-sm text-slate-500">
               Đăng nhập vào Portfolio Editor
@@ -109,7 +113,9 @@ const AuthPage: React.FC = () => {
               disabled={loginMutation.isPending}
               className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loginMutation.isPending ? "Đang đăng nhập..." : "Đăng nhập"}
+              {loginMutation.isPending
+                ? "Đang đăng nhập..."
+                : "Đăng nhập"}
             </button>
           </form>
 
