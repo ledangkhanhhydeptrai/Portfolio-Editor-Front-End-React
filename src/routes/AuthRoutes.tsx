@@ -1,4 +1,4 @@
-import LoginPage from "../pages/AuthPage";
+import AuthPage from "../pages/AuthPage";
 
 
-export const authRoutes = [{ path: "/auth", element: <LoginPage /> }];
+export const authRoutes = [{ path: "/auth", element: <AuthPage /> }];
