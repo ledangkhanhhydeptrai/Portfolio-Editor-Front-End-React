@@ -18,12 +18,12 @@ const AuthPage: React.FC = () => {
     loginMutation.mutate(
       {
         email: readField(data, "email"),
-        password: readField(data, "password"),
+        password: readField(data, "password")
       },
       {
         onSuccess: () => {
           navigate("/");
-        },
+        }
       }
     );
   };
