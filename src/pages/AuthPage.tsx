@@ -240,8 +240,9 @@ const initials = (name: string) => {
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+
   const [email, setEmail] = React.useState<string>(readRemembered);
-  const [password, setPassword] = React.useState<string>("");
+  const [loginCredential, setLoginCredential] = React.useState<string>("");
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const [remember, setRemember] = React.useState<boolean>(
     () => readRemembered() !== ""
@@ -249,14 +250,16 @@ const LoginPage: React.FC = () => {
   const [capsOn, setCapsOn] = React.useState<boolean>(false);
 
   const emailValid = /^\S+@\S+\.\S+$/.test(email);
-
   const loginMutation = useLogin();
 
   const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     loginMutation.mutate(
-      { email, password },
+      {
+        email,
+        password: loginCredential
+      },
       {
         onSuccess: () => {
           try {
@@ -266,8 +269,9 @@ const LoginPage: React.FC = () => {
               localStorage.removeItem(REMEMBER_KEY);
             }
           } catch {
-            /* bỏ qua nếu trình duyệt chặn localStorage */
+            // bỏ qua nếu trình duyệt chặn localStorage
           }
+
           navigate("/");
         }
       }
@@ -438,8 +442,8 @@ const LoginPage: React.FC = () => {
                 label="Mật khẩu"
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
-                value={password}
-                onChange={setPassword}
+                value={loginCredential}
+                onChange={setLoginCredential}
                 onKeyEvent={(event) =>
                   setCapsOn(event.getModifierState("CapsLock"))
                 }
@@ -452,7 +456,6 @@ const LoginPage: React.FC = () => {
                     onClick={() => setShowPassword((value) => !value)}
                     aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                     aria-pressed={showPassword}
-                    className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-xl text-white/50 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#7c8bff]"
                   >
                     <EyeIcon off={showPassword} />
                   </button>
