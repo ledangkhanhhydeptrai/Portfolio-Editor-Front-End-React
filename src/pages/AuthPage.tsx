@@ -240,7 +240,6 @@ const initials = (name: string) => {
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const passwordInputClass = `${inputClass} text-xl tracking-[0.22em]`;
   const [email, setEmail] = React.useState<string>(readRemembered);
   const [password, setPassword] = React.useState<string>("");
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
@@ -446,7 +445,7 @@ const LoginPage: React.FC = () => {
                 }
                 onBlurField={() => setCapsOn(false)}
                 icon={<LockIcon />}
-                className={passwordInputClass}
+                className={`${inputClass} text-xl tracking-[0.22em]`}
                 trailing={
                   <button
                     type="button"
