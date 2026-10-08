@@ -1,8 +1,8 @@
-import LoginPage from "../pages/AuthPage";
+import LoginPage from "../pages/auth/AuthPage";
 
 export const publicRoutes = [
   {
     path: "/auth/login",
-    element: <LoginPage />,
+    element: <LoginPage />
   }
 ];
