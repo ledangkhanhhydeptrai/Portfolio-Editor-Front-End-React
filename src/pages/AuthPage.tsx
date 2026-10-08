@@ -12,15 +12,25 @@ const PROFILE = {
   skills: ["Kỹ năng 1", "Kỹ năng 2", "Kỹ năng 3"],
   // Tối đa 3 dự án. Thêm `image` (link ảnh hoặc ảnh import) để thay màu nền.
   projects: [
-    { title: "Dự án nổi bật", category: "Thể loại", color: "#5b6cff", image: "" },
-    { title: "Dự án thứ hai", category: "Thể loại", color: "#a855f7", image: "" },
-    { title: "Dự án thứ ba", category: "Thể loại", color: "#0ea5c6", image: "" },
+    {
+      title: "Dự án nổi bật",
+      category: "Thể loại",
+      color: "#5b6cff",
+      image: ""
+    },
+    {
+      title: "Dự án thứ hai",
+      category: "Thể loại",
+      color: "#a855f7",
+      image: ""
+    },
+    { title: "Dự án thứ ba", category: "Thể loại", color: "#0ea5c6", image: "" }
   ],
   links: [
     { label: "Instagram", href: "https://instagram.com/your-username" },
     { label: "LinkedIn", href: "https://linkedin.com/in/your-username" },
-    { label: "Email", href: "mailto:you@example.com" },
-  ],
+    { label: "Email", href: "mailto:you@example.com" }
+  ]
 };
 /* ========================================= */
 
@@ -55,7 +65,6 @@ const heading = "font-['Bricolage_Grotesque',sans-serif]";
 
 const inputClass =
   "peer h-[clamp(3.5rem,7.2vh,4rem)] w-full rounded-2xl border border-white/10 bg-white/5 pb-1 pl-14 pr-5 pt-6 text-[17px] font-medium text-white " +
-  "[&[type=password]]:text-xl [&[type=password]]:tracking-[0.22em] " +
   "placeholder-transparent transition hover:border-white/20 focus:border-[#7c8bff] focus:bg-white/[0.08] " +
   "focus:outline-none focus:ring-4 focus:ring-[#5b6cff]/25 " +
   "[&:-webkit-autofill]:[-webkit-text-fill-color:#fff] " +
@@ -77,7 +86,7 @@ const svgProps = {
   strokeWidth: 1.8,
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
-  "aria-hidden": true,
+  "aria-hidden": true
 };
 
 const MailIcon = () => (
@@ -116,9 +125,26 @@ const CheckIcon = () => (
 );
 
 const Spinner = () => (
-  <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.3" strokeWidth="3" />
-    <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+  <svg
+    className="h-5 w-5 animate-spin"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+  >
+    <circle
+      cx="12"
+      cy="12"
+      r="9"
+      stroke="currentColor"
+      strokeOpacity="0.3"
+      strokeWidth="3"
+    />
+    <path
+      d="M21 12a9 9 0 0 0-9-9"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
@@ -134,7 +160,20 @@ const Field: React.FC<{
   trailing?: React.ReactNode;
   onKeyEvent?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   onBlurField?: () => void;
-}> = ({ id, label, type, autoComplete, value, onChange, icon, trailing, onKeyEvent, onBlurField }) => (
+  className?: string;
+}> = ({
+  id,
+  label,
+  type,
+  autoComplete,
+  value,
+  onChange,
+  icon,
+  trailing,
+  onKeyEvent,
+  onBlurField,
+  className = inputClass
+}) => (
   <div className="relative">
     <input
       id={id}
@@ -147,11 +186,13 @@ const Field: React.FC<{
       onKeyUp={onKeyEvent}
       onBlur={onBlurField}
       required
-      className={`${inputClass} ${trailing ? "pr-16" : ""}`}
+      className={`${className} ${trailing ? "pr-16" : ""}`}
     />
+
     <label htmlFor={id} className={labelClass}>
       {label}
     </label>
+
     {icon}
     {trailing}
   </div>
@@ -166,14 +207,23 @@ const WorkBento: React.FC = () => (
       <figure
         key={project.title + index}
         className={`lp-rise relative m-0 overflow-hidden rounded-3xl border border-white/10 ${tileLayout[index]}`}
-        style={{ backgroundColor: project.color, animationDelay: `${300 + index * 140}ms` }}
+        style={{
+          backgroundColor: project.color,
+          animationDelay: `${300 + index * 140}ms`
+        }}
       >
         {project.image && (
-          <img src={project.image} alt={project.title} className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={project.image}
+            alt={project.title}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         )}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_15%,rgba(255,255,255,0.35),transparent_55%)]" />
         <figcaption className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/15 bg-black/25 px-3.5 py-2.5 backdrop-blur-md">
-          <p className="truncate text-sm font-semibold text-white">{project.title}</p>
+          <p className="truncate text-sm font-semibold text-white">
+            {project.title}
+          </p>
           <p className="truncate text-xs text-white/70">{project.category}</p>
         </figcaption>
       </figure>
@@ -183,16 +233,20 @@ const WorkBento: React.FC = () => (
 
 const initials = (name: string) => {
   const words = name.trim().split(/\s+/);
-  return (words[0][0] + (words.length > 1 ? words[words.length - 1][0] : "")).toUpperCase();
+  return (
+    words[0][0] + (words.length > 1 ? words[words.length - 1][0] : "")
+  ).toUpperCase();
 };
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-
+  const passwordInputClass = `${inputClass} text-xl tracking-[0.22em]`;
   const [email, setEmail] = React.useState<string>(readRemembered);
   const [password, setPassword] = React.useState<string>("");
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
-  const [remember, setRemember] = React.useState<boolean>(() => readRemembered() !== "");
+  const [remember, setRemember] = React.useState<boolean>(
+    () => readRemembered() !== ""
+  );
   const [capsOn, setCapsOn] = React.useState<boolean>(false);
 
   const emailValid = /^\S+@\S+\.\S+$/.test(email);
@@ -216,7 +270,7 @@ const LoginPage: React.FC = () => {
             /* bỏ qua nếu trình duyệt chặn localStorage */
           }
           navigate("/");
-        },
+        }
       }
     );
   };
@@ -224,8 +278,14 @@ const LoginPage: React.FC = () => {
   /* Vệt sáng đi theo chuột trong thẻ form */
   const handleMouseMove = (event: React.MouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    event.currentTarget.style.setProperty("--x", `${event.clientX - rect.left}px`);
-    event.currentTarget.style.setProperty("--y", `${event.clientY - rect.top}px`);
+    event.currentTarget.style.setProperty(
+      "--x",
+      `${event.clientX - rect.left}px`
+    );
+    event.currentTarget.style.setProperty(
+      "--y",
+      `${event.clientY - rect.top}px`
+    );
   };
 
   const marqueeBase = Array.from({ length: 4 }, () => PROFILE.skills).flat();
@@ -247,7 +307,9 @@ const LoginPage: React.FC = () => {
       <aside className="relative flex min-h-0 min-w-0 flex-col justify-between gap-8 px-6 py-8 sm:px-12 lg:gap-5 lg:px-16 lg:py-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className={`${heading} grid h-12 w-12 place-items-center rounded-2xl bg-white text-base font-bold text-[#070b1f]`}>
+            <span
+              className={`${heading} grid h-12 w-12 place-items-center rounded-2xl bg-white text-base font-bold text-[#070b1f]`}
+            >
               {initials(PROFILE.name)}
             </span>
             <div className="leading-tight">
@@ -268,12 +330,16 @@ const LoginPage: React.FC = () => {
         </div>
 
         <div>
-          <h1 className={`${heading} text-5xl font-bold leading-[1] tracking-[-0.03em] sm:text-7xl lg:text-[clamp(3rem,9vh,6rem)]`}>
+          <h1
+            className={`${heading} text-5xl font-bold leading-[1] tracking-[-0.03em] sm:text-7xl lg:text-[clamp(3rem,9vh,6rem)]`}
+          >
             Xin chào,
             <br />
             tôi là {PROFILE.shortName}.
           </h1>
-          <p className="mt-6 max-w-[40ch] text-lg leading-relaxed text-white/65 lg:mt-4">{PROFILE.intro}</p>
+          <p className="mt-6 max-w-[40ch] text-lg leading-relaxed text-white/65 lg:mt-4">
+            {PROFILE.intro}
+          </p>
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col gap-4 lg:min-h-[180px]">
@@ -320,7 +386,7 @@ const LoginPage: React.FC = () => {
           className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
           style={{
             background:
-              "radial-gradient(520px circle at var(--x, 50%) var(--y, 30%), rgba(129,140,248,0.14), transparent 60%)",
+              "radial-gradient(520px circle at var(--x, 50%) var(--y, 30%), rgba(129,140,248,0.14), transparent 60%)"
           }}
         />
 
@@ -334,9 +400,19 @@ const LoginPage: React.FC = () => {
 
         {/* Giữa: form */}
         <div className="relative flex flex-1 items-center justify-center py-6">
-          <form onSubmit={handleLogin} noValidate className="w-full max-w-[580px]">
-            <h2 className={`${heading} text-[clamp(2.5rem,6.5vh,3.75rem)] font-bold leading-[1.12] tracking-[-0.02em]`}>Đăng nhập</h2>
-            <p className="mt-3 text-[clamp(1rem,2.1vh,1.25rem)] leading-relaxed text-white/60">Quản lý dự án và nội dung portfolio của bạn.</p>
+          <form
+            onSubmit={handleLogin}
+            noValidate
+            className="w-full max-w-[580px]"
+          >
+            <h2
+              className={`${heading} text-[clamp(2.5rem,6.5vh,3.75rem)] font-bold leading-[1.12] tracking-[-0.02em]`}
+            >
+              Đăng nhập
+            </h2>
+            <p className="mt-3 text-[clamp(1rem,2.1vh,1.25rem)] leading-relaxed text-white/60">
+              Quản lý dự án và nội dung portfolio của bạn.
+            </p>
 
             <div className="mt-[clamp(1.5rem,4.5vh,2.75rem)] space-y-[clamp(0.75rem,1.8vh,1.25rem)]">
               <Field
@@ -365,9 +441,12 @@ const LoginPage: React.FC = () => {
                 autoComplete="current-password"
                 value={password}
                 onChange={setPassword}
-                onKeyEvent={(event) => setCapsOn(event.getModifierState("CapsLock"))}
+                onKeyEvent={(event) =>
+                  setCapsOn(event.getModifierState("CapsLock"))
+                }
                 onBlurField={() => setCapsOn(false)}
                 icon={<LockIcon />}
+                className={passwordInputClass}
                 trailing={
                   <button
                     type="button"
@@ -381,7 +460,10 @@ const LoginPage: React.FC = () => {
                 }
               />
               {capsOn && (
-                <p className="flex items-center gap-2 text-sm text-amber-300" role="status">
+                <p
+                  className="flex items-center gap-2 text-sm text-amber-300"
+                  role="status"
+                >
                   <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-amber-300 text-[10px] font-bold text-[#2a1a00]">
                     !
                   </span>
