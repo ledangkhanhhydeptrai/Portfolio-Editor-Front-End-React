@@ -1,29 +1,35 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogin } from "../hooks/useLogin";
+
+/* Đọc giá trị từ form, không cần lưu giá trị nhạy cảm vào state hay gán chuỗi cố định */
+const readField = (data: FormData, key: string): string =>
+  String(data.get(key) ?? "");
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const loginMutation = useLogin();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const data = new FormData(event.currentTarget);
+
     loginMutation.mutate(
       {
-        email,
-        password
+        email: readField(data, "email"),
+        password: readField(data, "password"),
       },
       {
         onSuccess: () => {
           navigate("/");
-        }
+        },
       }
     );
   };
+
+  const fieldClass =
+    "w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10";
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
@@ -52,13 +58,12 @@ const LoginPage: React.FC = () => {
 
               <input
                 id="email"
+                name="email"
                 type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
                 placeholder="Nhập email"
                 autoComplete="email"
                 required
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
+                className={fieldClass}
               />
             </div>
 
@@ -81,18 +86,20 @@ const LoginPage: React.FC = () => {
 
               <input
                 id="password"
+                name="password"
                 type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
                 placeholder="Nhập mật khẩu"
                 autoComplete="current-password"
                 required
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
+                className={fieldClass}
               />
             </div>
 
             {loginMutation.isError && (
-              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+              <div
+                role="alert"
+                className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+              >
                 Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.
               </div>
             )}
