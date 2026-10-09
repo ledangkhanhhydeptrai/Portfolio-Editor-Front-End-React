@@ -36,10 +36,10 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
       };
 
   const currentUser = {
-    name: user ? user.username : "Người dùng",
-    email: user ? user.email : ""
+    name: user && user.fullName ? user.fullName : "Người dùng",
+    email: user && user.email ? user.email : ""
   };
-
+  console.log("User", user && user.fullName);
   const initials = currentUser.name
     .split(" ")
     .map((part) => part.charAt(0))

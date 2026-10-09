@@ -16,6 +16,7 @@ export const AuthLogin = async ({
       `${API_CONFIG.ENDPOINTS.LOGIN}`,
       { ...postConfig(), data: { email, password } }
     );
+    console.log("response:", response.data.username);
     if (response.status !== HTTP_STATUS.OK)
       throw new Error(`HTTP_STATUS:${response.status}`);
     return response;

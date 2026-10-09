@@ -111,7 +111,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <p
                   className={`text-xs leading-tight text-slate-500 dark:text-slate-400 ${hideWhenCollapsed}`}
                 >
-                  {user.username}
+                  {user.fullName}
                 </p>
               </div>
             )}

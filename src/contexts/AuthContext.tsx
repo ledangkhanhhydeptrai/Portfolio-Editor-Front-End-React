@@ -4,17 +4,14 @@ import React, {
   useEffect,
   useState,
 } from "react";
-
-import { LoginResponse } from "../services/auth/authTypes";
 import { getCurrentUser } from "../services/profile/profileService";
-// Thay bằng API kiểm tra phiên đăng nhập thực tế của bạn.
-
+import { UserProfile } from "../services/profile/profileTypes";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-  user: LoginResponse | null;
-  setUser: React.Dispatch<React.SetStateAction<LoginResponse | null>>;
+  user: UserProfile | null;
+  setUser: React.Dispatch<React.SetStateAction<UserProfile | null>>;
   authReady: boolean;
 }
 
@@ -26,13 +23,19 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<LoginResponse | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
       try {
         const response = await getCurrentUser();
+
+        if (response.status !== 200 || !response.data) {
+          setUser(null);
+          setIsAuthenticated(false);
+          return;
+        }
 
         setUser(response.data);
         setIsAuthenticated(true);
