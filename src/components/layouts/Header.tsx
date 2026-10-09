@@ -1,63 +1,118 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ChevronDown,
   ExternalLink,
   LogOut,
   Menu,
+  Moon,
   Settings,
+  Sun,
   UserRound
 } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
 
 interface HeaderProps {
-  /** Opens the sidebar drawer on mobile. Optional. */
   onMenuClick?: () => void;
 }
 
-// Keep in sync with the routes in Sidebar.
-const pageMeta: Record<string, { section: string; title: string }> = {
-  "/video": { section: "Content", title: "Videos" },
-  "/videos": { section: "Content", title: "Videos" },
-  "/social-links": { section: "Content", title: "Social links" },
-  "/work-styles": { section: "Portfolio", title: "Work styles" },
-  "/directions": { section: "Portfolio", title: "Directions" },
-  "/skills": { section: "Portfolio", title: "Skills" },
-  "/projects": { section: "Portfolio", title: "Projects" },
-  "/experiences": { section: "Portfolio", title: "Experience" },
-  "/educations": { section: "Portfolio", title: "Education" },
-  "/profile": { section: "Portfolio", title: "Profile" },
-  "/curriculum": { section: "Portfolio", title: "CV" },
-  "/settings": { section: "Account", title: "Settings" }
-};
+interface PageMeta {
+  title: string;
+  description: string;
+  parent?: string;
+}
 
-// TODO: replace with the signed-in user from your auth store.
-const currentUser = {
-  name: "Admin User",
-  email: "admin@example.com",
-  role: "Administrator"
+const pageMeta: Record<string, PageMeta> = {
+  "/video": {
+    title: "Video",
+    description: "Manage your video content"
+  },
+  "/videos": {
+    title: "Videos",
+    description: "Manage your video content"
+  },
+  "/social-links": {
+    title: "Social Links",
+    description: "Manage your social media links"
+  },
+  "/work-styles": {
+    title: "Work Styles",
+    description: "Manage your work styles"
+  },
+  "/directions": {
+    title: "Directions",
+    description: "Manage your directions"
+  },
+  "/skills": {
+    title: "Skills",
+    description: "Manage your professional skills"
+  },
+  "/projects": {
+    title: "Projects",
+    description: "Manage your projects"
+  },
+  "/experiences": {
+    title: "Experiences",
+    description: "Manage your work experience"
+  },
+  "/educations": {
+    title: "Educations",
+    description: "Manage your education history"
+  },
+  "/profile": {
+    title: "Profile",
+    description: "Manage your personal information"
+  },
+  "/curriculum": {
+    title: "Curriculum",
+    description: "Manage your CV documents"
+  },
+  "/settings": {
+    title: "Settings",
+    description: "Manage your application settings"
+  }
 };
-
-const initials = currentUser.name
-  .split(" ")
-  .map((part) => part[0])
-  .slice(0, 2)
-  .join("")
-  .toUpperCase();
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const location = useLocation();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const matchedPath = Object.keys(pageMeta).find(
-    (path) => pathname === path || pathname.startsWith(`${path}/`)
-  );
-  const page = matchedPath
+  const [isOpen, setIsOpen] = useState(false);
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+
+  const isDark = theme === "dark";
+
+  const currentPath = location.pathname;
+
+  const matchedPath = Object.keys(pageMeta)
+    .sort((a, b) => b.length - a.length)
+    .find((path) => currentPath === path || currentPath.startsWith(`${path}/`));
+
+  const currentPage: PageMeta = matchedPath
     ? pageMeta[matchedPath]
-    : { section: "Admin", title: "Dashboard" };
+    : {
+        title: "Dashboard",
+        description: "Welcome to your dashboard"
+      };
 
-  React.useEffect(() => {
+  const currentUser = {
+    name: "Admin User",
+    email: "admin@example.com",
+    role: "Administrator",
+    avatarUrl: "./images"
+  };
+
+  const initials = currentUser.name
+    .split(" ")
+    .map((part) => part.charAt(0))
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -68,7 +123,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     };
 
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setIsOpen(false);
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -81,133 +138,226 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   }, []);
 
   const handleLogout = () => {
-    // TODO: Call the logout API if the backend supports it.
-    // Clear credentials according to the project's auth mechanism.
     setIsOpen(false);
-    navigate("/login");
+    setIsAuthenticated(false);
+    navigate("/login", { replace: true });
   };
+  const headerClass = isDark
+    ? "border-white/10 bg-slate-950 text-white"
+    : "border-slate-200 bg-white text-slate-900";
+
+  const mutedTextClass = isDark ? "text-slate-400" : "text-slate-500";
+
+  const hoverClass = isDark
+    ? "hover:bg-white/10 hover:text-white"
+    : "hover:bg-slate-100 hover:text-slate-900";
+
+  const dropdownClass = isDark
+    ? "border-white/10 bg-slate-900"
+    : "border-slate-200 bg-white";
+
+  const dropdownTextClass = isDark ? "text-slate-200" : "text-slate-700";
+
+  const dividerClass = isDark ? "border-white/10" : "border-slate-200";
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-white/10 bg-slate-950 px-4 sm:px-6 lg:px-8">
-      {/* Left: menu button + breadcrumb */}
-      <div className="flex min-w-0 items-center gap-3">
-        <button
-          type="button"
-          onClick={onMenuClick}
-          aria-label="Open menu"
-          className="-ml-1 rounded-lg p-2 text-slate-300 hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 lg:hidden"
-        >
-          <Menu size={20} />
-        </button>
-
-        <nav
-          aria-label="Breadcrumb"
-          className="flex min-w-0 items-center gap-2 text-sm"
-        >
-          <span className="hidden text-slate-400 sm:inline">
-            {page.section}
-          </span>
-          <span className="hidden text-slate-600 sm:inline" aria-hidden="true">
-            /
-          </span>
-          <h1 className="truncate font-semibold text-white">{page.title}</h1>
-        </nav>
-      </div>
-
-      {/* Right: view site + user menu */}
-      <div className="flex items-center gap-2">
-        <a
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 sm:inline-flex"
-        >
-          View site
-          <ExternalLink size={14} />
-        </a>
-
-        <div className="relative" ref={dropdownRef}>
+    <header
+      className={`relative z-30 flex min-h-20 items-center justify-between gap-4 border-b px-4 py-3 transition-colors sm:px-6 lg:px-8 ${headerClass}`}
+    >
+      {/* Left: Menu and page information */}
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+        {onMenuClick && (
           <button
             type="button"
-            onClick={() => setIsOpen((prev) => !prev)}
-            aria-expanded={isOpen}
-            aria-haspopup="menu"
-            className="flex items-center gap-2.5 rounded-lg py-1.5 pl-1.5 pr-2.5 transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            onClick={onMenuClick}
+            aria-label="Open sidebar"
+            className={`shrink-0 rounded-lg p-2 transition ${hoverClass}`}
           >
-            <span
-              aria-hidden="true"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white"
-            >
-              {initials}
-            </span>
-
-            <span className="hidden text-left leading-tight md:block">
-              <span className="block text-sm font-medium text-white">
-                {currentUser.name}
-              </span>
-              <span className="block text-xs text-slate-400">
-                {currentUser.role}
-              </span>
-            </span>
-
-            <ChevronDown
-              size={16}
-              className={`text-slate-400 transition-transform ${
-                isOpen ? "rotate-180" : ""
-              }`}
-            />
+            <Menu size={21} />
           </button>
+        )}
 
-          {isOpen && (
-            <div
-              role="menu"
-              className="absolute right-0 mt-2 w-60 overflow-hidden rounded-xl border border-slate-200 bg-white py-1.5 shadow-lg"
+        <div className="min-w-0">
+          {/* Breadcrumb */}
+          <div
+            className={`mb-1 flex items-center gap-2 text-xs ${mutedTextClass}`}
+          >
+            <Link to="/" className="transition hover:text-indigo-500">
+              Dashboard
+            </Link>
+
+            {currentPath !== "/" && (
+              <>
+                <span>/</span>
+                <span className="truncate">{currentPage.title}</span>
+              </>
+            )}
+          </div>
+
+          {/* Page title */}
+          <h1 className="truncate text-lg font-semibold sm:text-xl">
+            {currentPage.title}
+          </h1>
+
+          <p className={`hidden truncate text-xs sm:block ${mutedTextClass}`}>
+            {currentPage.description}
+          </p>
+        </div>
+      </div>
+
+      {/* Right: Theme, website link and account */}
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        {/* Toggle theme */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+          title={isDark ? "Light mode" : "Dark mode"}
+          className={`rounded-lg p-2 transition ${hoverClass}`}
+        >
+          {isDark ? <Sun size={19} /> : <Moon size={19} />}
+        </button>
+
+        {/* View website */}
+        <a
+          href="https://khanhhy-portfolio.vercel.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`hidden items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition sm:inline-flex ${
+            isDark
+              ? "border-white/10 text-slate-300 hover:bg-white/10 hover:text-white"
+              : "border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+          }`}
+        >
+          <span>View site</span>
+          <ExternalLink size={15} />
+        </a>
+
+        {/* Account dropdown */}
+        {isAuthenticated ? (
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsOpen((previous) => !previous)}
+              aria-expanded={isOpen}
+              aria-haspopup="menu"
+              className={`flex items-center gap-2 rounded-xl p-1.5 transition sm:gap-3 sm:px-2 ${hoverClass}`}
             >
-              <div className="border-b border-slate-100 px-4 py-3">
-                <p className="truncate text-sm font-medium text-slate-900">
+              {/* Avatar */}
+              {currentUser.avatarUrl ? (
+                <img
+                  src={currentUser.avatarUrl}
+                  alt={currentUser.name}
+                  className="h-9 w-9 rounded-full border border-white/10 object-cover"
+                />
+              ) : (
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">
+                  {initials || "AD"}
+                </div>
+              )}
+
+              {/* User information */}
+              <div className="hidden min-w-0 text-left md:block">
+                <p className="max-w-36 truncate text-sm font-medium">
                   {currentUser.name}
                 </p>
-                <p className="truncate text-xs text-slate-500">
-                  {currentUser.email}
+
+                <p className={`max-w-36 truncate text-xs ${mutedTextClass}`}>
+                  {currentUser.role}
                 </p>
               </div>
 
-              <div className="py-1">
-                <Link
-                  to="/profile"
-                  role="menuitem"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
-                >
-                  <UserRound size={17} className="text-slate-400" />
-                  Profile
-                </Link>
+              <ChevronDown
+                size={16}
+                className={`hidden transition-transform sm:block ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
 
-                <Link
-                  to="/settings"
-                  role="menuitem"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
-                >
-                  <Settings size={17} className="text-slate-400" />
-                  Settings
-                </Link>
-              </div>
+            {/* Dropdown menu */}
+            {isOpen && (
+              <div
+                role="menu"
+                className={`absolute right-0 top-full mt-3 w-64 overflow-hidden rounded-xl border shadow-2xl ${dropdownClass}`}
+              >
+                {/* User details */}
+                <div className={`border-b p-4 ${dividerClass}`}>
+                  <div className="flex items-center gap-3">
+                    {currentUser.avatarUrl ? (
+                      <img
+                        src={currentUser.avatarUrl}
+                        alt={currentUser.name}
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">
+                        {initials || "AD"}
+                      </div>
+                    )}
 
-              <div className="border-t border-slate-100 pt-1">
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={handleLogout}
-                  className="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 transition hover:bg-red-50"
-                >
-                  <LogOut size={17} />
-                  Log out
-                </button>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">
+                        {currentUser.name}
+                      </p>
+
+                      <p className={`truncate text-xs ${mutedTextClass}`}>
+                        {currentUser.email}
+                      </p>
+
+                      <p className="mt-1 text-xs font-medium text-indigo-500">
+                        {currentUser.role}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                <div className="p-2">
+                  <Link
+                    to="/profile"
+                    role="menuitem"
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${dropdownTextClass} ${hoverClass}`}
+                  >
+                    <UserRound size={17} />
+                    <span>My Profile</span>
+                  </Link>
+
+                  <Link
+                    to="/settings"
+                    role="menuitem"
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${dropdownTextClass} ${hoverClass}`}
+                  >
+                    <Settings size={17} />
+                    <span>Settings</span>
+                  </Link>
+                </div>
+
+                {/* Logout */}
+                <div className={`border-t p-2 ${dividerClass}`}>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-500 transition hover:bg-red-500/10"
+                  >
+                    <LogOut size={17} />
+                    <span>Log out</span>
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        ) : (
+          <Link
+            to="/login"
+            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-500"
+          >
+            Đăng nhập
+          </Link>
+        )}
       </div>
     </header>
   );
