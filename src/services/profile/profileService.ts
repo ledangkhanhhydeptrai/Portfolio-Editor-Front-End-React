@@ -1,15 +1,15 @@
 
 import { AxiosError } from "axios";
-import { LoginResponse } from "../auth/authTypes";
 import { ApiResponse } from "../../response/ApiResponse";
 import { fetchBaseResponse } from "../../config/fetchBaseResponse";
 import { API_CONFIG } from "../../config/api";
 import { requestConfig } from "../../config/requestConfig";
 import { HTTP_STATUS } from "../../constants/api";
+import { UserProfile } from "./profileTypes";
 
-export const getCurrentUser = async (): Promise<ApiResponse<LoginResponse>> => {
+export const getCurrentUser = async (): Promise<ApiResponse<UserProfile>> => {
   try {
-    const response = await fetchBaseResponse<LoginResponse>(
+    const response = await fetchBaseResponse<UserProfile>(
       `${API_CONFIG.ENDPOINTS.USER.PROFILE}`,
       requestConfig("GET")
     );
