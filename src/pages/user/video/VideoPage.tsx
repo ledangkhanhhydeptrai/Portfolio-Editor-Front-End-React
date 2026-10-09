@@ -14,6 +14,7 @@ import {
   X,
   Video
 } from "lucide-react";
+import { useTheme } from "../../../contexts/ThemeContext";
 
 type VideoStatus = "Published" | "Draft";
 type StatusFilter = "All" | VideoStatus;
@@ -237,6 +238,9 @@ const controlClass =
 /* ---------- Page ---------- */
 
 const VideoPage: React.FC = () => {
+  const { theme } = useTheme();
+
+  const isDark = theme === "dark";
   const [videos, setVideos] = useState<VideoItem[]>(initialVideos);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -486,14 +490,24 @@ const VideoPage: React.FC = () => {
   ];
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-6 bg-white p-2">
+    <div
+      className={`flex min-h-0 flex-1 flex-col gap-6 p-2 transition-colors ${
+        isDark ? "bg-slate-950 text-slate-100" : "bg-white text-slate-900"
+      }`}
+    >
       {/* Page heading */}
       <div className="flex shrink-0 flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+          <h2
+            className={`text-2xl font-semibold tracking-tight ${
+              isDark ? "text-white" : "text-slate-900"
+            }`}
+          >
             Videos
           </h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <p
+            className={`mt-1 text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}
+          >
             Upload, organize and publish the videos shown on your portfolio.
           </p>
         </div>
@@ -507,27 +521,60 @@ const VideoPage: React.FC = () => {
           Add video
         </button>
       </div>
-
       {/* Statistics: one strip instead of four separate cards */}
-      <dl className="grid shrink-0 grid-cols-2 gap-px overflow-hidden rounded-xl border border-slate-200 bg-slate-200 lg:grid-cols-4">
+      <dl
+        className={`grid shrink-0 grid-cols-2 gap-px overflow-hidden rounded-xl border lg:grid-cols-4 ${
+          isDark ? "border-black bg-black" : "border-slate-200 bg-slate-200"
+        }`}
+      >
         {stats.map((stat) => (
-          <div key={stat.label} className="bg-white px-5 py-4">
-            <dt className="text-sm text-slate-600">{stat.label}</dt>
-            <dd className="mt-1 text-2xl font-semibold tabular-nums text-slate-900">
+          <div
+            key={stat.label}
+            className={`${isDark ? "bg-slate-900" : "bg-white"} px-5 py-4`}
+          >
+            <dt
+              className={`text-sm ${
+                isDark ? "text-slate-400" : "text-slate-600"
+              }`}
+            >
+              {stat.label}
+            </dt>
+
+            <dd
+              className={`mt-1 text-2xl font-semibold tabular-nums ${
+                isDark ? "text-white" : "text-slate-900"
+              }`}
+            >
               {stat.value}
             </dd>
-            <p className="mt-0.5 text-xs text-slate-600">{stat.hint}</p>
+
+            <p
+              className={`mt-0.5 text-xs ${
+                isDark ? "text-slate-400" : "text-slate-600"
+              }`}
+            >
+              {stat.hint}
+            </p>
           </div>
         ))}
       </dl>
-
       {/* Library */}
-      <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+
+      <section
+        className={`flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border shadow-sm ${
+          isDark ? "border-black bg-slate-900" : "border-slate-200 bg-white"
+        }`}
+      >
         {/* Status tabs + view toggle */}
-        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-200 px-4 sm:px-5">
+        <div
+          className={`flex shrink-0 items-center justify-between gap-4 border-b px-4 sm:px-5 ${
+            isDark ? "border-black" : "border-slate-200"
+          }`}
+        >
           <div className="-mb-px flex gap-5 overflow-x-auto" role="tablist">
             {(["All", "Published", "Draft"] as StatusFilter[]).map((tab) => {
               const active = statusFilter === tab;
+
               return (
                 <button
                   key={tab}
@@ -538,15 +585,21 @@ const VideoPage: React.FC = () => {
                   className={`flex items-center gap-2 whitespace-nowrap border-b-2 py-3.5 text-sm font-medium transition-colors ${
                     active
                       ? "border-indigo-600 text-indigo-700"
-                      : "border-transparent text-slate-600 hover:text-slate-800"
+                      : isDark
+                        ? "border-transparent text-slate-400 hover:text-white"
+                        : "border-transparent text-slate-600 hover:text-slate-800"
                   }`}
                 >
                   {tab === "Draft" ? "Drafts" : tab}
                   <span
                     className={`rounded-full px-1.5 py-0.5 text-xs tabular-nums ${
                       active
-                        ? "bg-indigo-50 text-indigo-700"
-                        : "bg-slate-100 text-slate-600"
+                        ? isDark
+                          ? "bg-indigo-950 text-indigo-300"
+                          : "bg-indigo-50 text-indigo-700"
+                        : isDark
+                          ? "bg-slate-800 text-slate-300"
+                          : "bg-slate-100 text-slate-600"
                     }`}
                   >
                     {counts[tab]}
@@ -557,7 +610,9 @@ const VideoPage: React.FC = () => {
           </div>
 
           <div
-            className="hidden shrink-0 rounded-lg border border-slate-200 p-0.5 sm:flex"
+            className={`hidden shrink-0 rounded-lg border p-0.5 sm:flex ${
+              isDark ? "border-black" : "border-slate-200"
+            }`}
             role="group"
             aria-label="View mode"
           >
@@ -576,8 +631,10 @@ const VideoPage: React.FC = () => {
                 title={label}
                 className={`rounded-md p-1.5 transition ${
                   viewMode === mode
-                    ? "bg-slate-900 text-white"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-indigo-600 text-white"
+                    : isDark
+                      ? "text-slate-400 hover:bg-slate-800 hover:text-white"
+                      : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 <Icon size={16} />
@@ -586,43 +643,77 @@ const VideoPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Filters, or the bulk-action bar when rows are selected */}
+        {/* Filters or bulk-action bar */}
         {selectedIds.length > 0 ? (
-          <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-indigo-100 bg-indigo-50 px-4 py-3 sm:px-5">
-            <p className="mr-2 text-sm font-medium text-indigo-900">
+          <div
+            className={`flex shrink-0 flex-wrap items-center gap-2 border-b px-4 py-3 sm:px-5 ${
+              isDark
+                ? "border-black bg-indigo-950/40"
+                : "border-indigo-100 bg-indigo-50"
+            }`}
+          >
+            <p
+              className={`mr-2 text-sm font-medium ${
+                isDark ? "text-indigo-200" : "text-indigo-900"
+              }`}
+            >
               {selectedIds.length} selected
             </p>
+
             <button
               type="button"
               onClick={() => setPublished(selectedIds, true)}
-              className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium ring-1 transition ${
+                isDark
+                  ? "bg-slate-900 text-slate-200 ring-black hover:bg-slate-800"
+                  : "bg-white text-slate-700 ring-slate-200 hover:bg-slate-50"
+              }`}
             >
               Publish
             </button>
+
             <button
               type="button"
               onClick={() => setPublished(selectedIds, false)}
-              className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium ring-1 transition ${
+                isDark
+                  ? "bg-slate-900 text-slate-200 ring-black hover:bg-slate-800"
+                  : "bg-white text-slate-700 ring-slate-200 hover:bg-slate-50"
+              }`}
             >
               Move to drafts
             </button>
+
             <button
               type="button"
               onClick={() => setPendingDelete(selectedIds)}
-              className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-red-600 ring-1 ring-slate-200 hover:bg-red-50"
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium ring-1 transition ${
+                isDark
+                  ? "bg-slate-900 text-red-400 ring-black hover:bg-red-950/40"
+                  : "bg-white text-red-600 ring-slate-200 hover:bg-red-50"
+              }`}
             >
               Delete
             </button>
+
             <button
               type="button"
               onClick={() => setSelectedIds([])}
-              className="ml-auto rounded-lg px-3 py-1.5 text-sm text-indigo-700 hover:bg-indigo-100"
+              className={`ml-auto rounded-lg px-3 py-1.5 text-sm ${
+                isDark
+                  ? "text-indigo-300 hover:bg-indigo-950"
+                  : "text-indigo-700 hover:bg-indigo-100"
+              }`}
             >
               Clear selection
             </button>
           </div>
         ) : (
-          <div className="flex shrink-0 flex-col gap-3 border-b border-slate-200 p-4 sm:flex-row sm:items-center sm:px-5">
+          <div
+            className={`flex shrink-0 flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:px-5 ${
+              isDark ? "border-black" : "border-slate-200"
+            }`}
+          >
             <div className="relative sm:w-72">
               <Search
                 size={17}
@@ -672,7 +763,13 @@ const VideoPage: React.FC = () => {
         ) : viewMode === "table" ? (
           <div className="min-h-0 flex-1 overflow-auto">
             <table className="w-full min-w-[820px] text-left text-sm">
-              <thead className="sticky top-0 z-10 border-b border-slate-200 bg-slate-50 text-xs font-medium text-slate-600">
+              <thead
+                className={`sticky top-0 z-10 border-b text-xs font-medium ${
+                  isDark
+                    ? "border-black bg-slate-800 text-slate-300"
+                    : "border-slate-200 bg-slate-50 text-slate-600"
+                }`}
+              >
                 <tr>
                   <th className="w-12 py-3 pl-5">
                     <Checkbox
@@ -693,7 +790,11 @@ const VideoPage: React.FC = () => {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-slate-100">
+              <tbody
+                className={`divide-y ${
+                  isDark ? "divide-black" : "divide-slate-100"
+                }`}
+              >
                 {pageVideos.map((video) => {
                   const isSelected = selectedIds.includes(video.id);
                   const isPublished = video.status === "Published";
@@ -702,7 +803,13 @@ const VideoPage: React.FC = () => {
                     <tr
                       key={video.id}
                       className={`transition-colors ${
-                        isSelected ? "bg-indigo-50/50" : "hover:bg-slate-50/70"
+                        isSelected
+                          ? isDark
+                            ? "bg-indigo-950/40"
+                            : "bg-indigo-50/50"
+                          : isDark
+                            ? "hover:bg-slate-800/70"
+                            : "hover:bg-slate-50/70"
                       }`}
                     >
                       <td className="py-3 pl-5">
@@ -720,10 +827,18 @@ const VideoPage: React.FC = () => {
                             className="h-14 w-24 shrink-0 rounded-md"
                           />
                           <div className="min-w-0 max-w-xs">
-                            <p className="truncate font-semibold text-slate-900">
+                            <p
+                              className={`truncate font-semibold ${
+                                isDark ? "text-slate-100" : "text-slate-900"
+                              }`}
+                            >
                               {video.title}
                             </p>
-                            <p className="mt-0.5 line-clamp-1 text-xs text-slate-600">
+                            <p
+                              className={`mt-0.5 line-clamp-1 text-xs ${
+                                isDark ? "text-slate-400" : "text-slate-600"
+                              }`}
+                            >
                               {video.description}
                             </p>
                           </div>
@@ -731,7 +846,13 @@ const VideoPage: React.FC = () => {
                       </td>
 
                       <td className="px-3 py-3">
-                        <span className="inline-flex rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700">
+                        <span
+                          className={`inline-flex rounded-md px-2 py-1 text-xs font-medium ${
+                            isDark
+                              ? "bg-indigo-950 text-indigo-300"
+                              : "bg-indigo-50 text-indigo-700"
+                          }`}
+                        >
                           {video.category}
                         </span>
                       </td>
@@ -749,11 +870,19 @@ const VideoPage: React.FC = () => {
                         </div>
                       </td>
 
-                      <td className="px-3 py-3 text-right font-medium tabular-nums text-slate-800">
+                      <td
+                        className={`px-3 py-3 text-right font-medium tabular-nums ${
+                          isDark ? "text-slate-200" : "text-slate-800"
+                        }`}
+                      >
                         {video.views > 0 ? video.views.toLocaleString() : "–"}
                       </td>
 
-                      <td className="whitespace-nowrap px-3 py-3 text-slate-700">
+                      <td
+                        className={`whitespace-nowrap px-3 py-3 ${
+                          isDark ? "text-slate-300" : "text-slate-700"
+                        }`}
+                      >
                         {formatDate(video.createdAt)}
                       </td>
 
@@ -795,15 +924,21 @@ const VideoPage: React.FC = () => {
               return (
                 <li
                   key={video.id}
-                  className={`overflow-hidden rounded-lg border bg-white transition-colors ${
+                  className={`overflow-hidden rounded-lg border transition-colors ${
                     isSelected
                       ? "border-indigo-400 ring-1 ring-indigo-400"
-                      : "border-slate-200"
-                  }`}
+                      : isDark
+                        ? "border-black"
+                        : "border-slate-200"
+                  } ${isDark ? "bg-slate-900" : "bg-white"}`}
                 >
                   <div className="relative">
                     <Thumbnail video={video} className="aspect-video w-full" />
-                    <div className="absolute left-2 top-2 rounded bg-white/90 p-1">
+                    <div
+                      className={`absolute left-2 top-2 rounded p-1 ${
+                        isDark ? "bg-slate-900/90" : "bg-white/90"
+                      }`}
+                    >
                       <Checkbox
                         checked={isSelected}
                         onChange={() => toggleSelected(video.id)}
@@ -814,7 +949,11 @@ const VideoPage: React.FC = () => {
 
                   <div className="p-4">
                     <div className="flex items-start justify-between gap-3">
-                      <p className="line-clamp-2 font-semibold text-slate-900">
+                      <p
+                        className={`line-clamp-2 font-semibold ${
+                          isDark ? "text-slate-100" : "text-slate-900"
+                        }`}
+                      >
                         {video.title}
                       </p>
                       <PublishSwitch
@@ -824,15 +963,27 @@ const VideoPage: React.FC = () => {
                       />
                     </div>
 
-                    <p className="mt-1 text-xs text-slate-600">
-                      <span className="font-medium text-indigo-700">
+                    <p
+                      className={`mt-1 text-xs ${
+                        isDark ? "text-slate-400" : "text-slate-600"
+                      }`}
+                    >
+                      <span
+                        className={`font-medium ${
+                          isDark ? "text-indigo-300" : "text-indigo-700"
+                        }`}
+                      >
                         {video.category}
                       </span>{" "}
                       • {formatDate(video.createdAt)}
                     </p>
 
                     <div className="mt-3 flex items-center justify-between">
-                      <div className="flex items-center gap-3 text-xs text-slate-600">
+                      <div
+                        className={`flex items-center gap-3 text-xs ${
+                          isDark ? "text-slate-400" : "text-slate-600"
+                        }`}
+                      >
                         {statusBadge(video.status)}
                         <span className="tabular-nums">
                           {video.views.toLocaleString()} views
@@ -870,7 +1021,13 @@ const VideoPage: React.FC = () => {
 
         {/* Pagination */}
         {filteredVideos.length > 0 && (
-          <div className="flex shrink-0 flex-col gap-3 border-t border-slate-200 px-4 py-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <div
+            className={`flex shrink-0 flex-col gap-3 border-t px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-5 ${
+              isDark
+                ? "border-black text-slate-400"
+                : "border-slate-200 text-slate-600"
+            }`}
+          >
             <p>
               Showing {pageStart + 1}–{pageStart + pageVideos.length} of{" "}
               {filteredVideos.length}
@@ -884,19 +1041,29 @@ const VideoPage: React.FC = () => {
                 onClick={() => setPage(currentPage - 1)}
                 disabled={currentPage === 1}
                 aria-label="Previous page"
-                className="rounded-lg p-2 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+                className={`rounded-lg p-2 disabled:cursor-not-allowed disabled:opacity-40 ${
+                  isDark
+                    ? "hover:bg-slate-800 disabled:hover:bg-transparent"
+                    : "hover:bg-slate-100 disabled:hover:bg-transparent"
+                }`}
               >
                 <ChevronLeft size={16} />
               </button>
+
               <span className="px-2 tabular-nums">
                 Page {currentPage} of {totalPages}
               </span>
+
               <button
                 type="button"
                 onClick={() => setPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 aria-label="Next page"
-                className="rounded-lg p-2 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+                className={`rounded-lg p-2 disabled:cursor-not-allowed disabled:opacity-40 ${
+                  isDark
+                    ? "hover:bg-slate-800 disabled:hover:bg-transparent"
+                    : "hover:bg-slate-100 disabled:hover:bg-transparent"
+                }`}
               >
                 <ChevronRight size={16} />
               </button>
@@ -953,7 +1120,6 @@ const VideoPage: React.FC = () => {
           </div>
         </div>
       )}
-
       {/* Toast */}
       {toast && (
         <div

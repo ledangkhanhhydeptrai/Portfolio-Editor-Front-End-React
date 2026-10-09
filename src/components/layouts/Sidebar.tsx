@@ -78,15 +78,21 @@ const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-64 flex-col bg-slate-950 transition-all duration-300 lg:sticky lg:bottom-auto lg:top-16 lg:z-30 lg:h-[calc(100vh-4rem)] lg:translate-x-0 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        } ${collapsed ? "lg:w-20" : "lg:w-64"}`}
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-64 flex-col
+  border-r border-slate-200 bg-white text-slate-900
+  transition-all duration-300
+  dark:border-white/10 dark:bg-slate-950 dark:text-white
+  lg:sticky lg:bottom-auto lg:top-16 lg:z-30
+  lg:h-[calc(100vh-4rem)] lg:translate-x-0
+  ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+  ${collapsed ? "lg:w-20" : "lg:w-64"}`}
       >
         {/* Brand */}
         <div
-          className={`flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5 ${
-            collapsed ? "lg:justify-center lg:px-0" : ""
-          }`}
+          className={`flex h-16 shrink-0 items-center justify-between
+  border-b border-slate-200 px-5
+  dark:border-white/10
+  ${collapsed ? "lg:justify-center lg:px-0" : ""}`}
         >
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-500 text-base font-bold text-white">
@@ -94,10 +100,17 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
 
             <div className={hideWhenCollapsed}>
-              <p className="text-sm font-semibold leading-tight text-white">
+              <p
+                className={`text-sm font-semibold leading-tight text-slate-900 dark:text-white ${hideWhenCollapsed}`}
+              >
                 Portfolio
               </p>
-              <p className="text-xs leading-tight text-slate-400">Admin</p>
+
+              <p
+                className={`text-xs leading-tight text-slate-500 dark:text-slate-400 ${hideWhenCollapsed}`}
+              >
+                Admin
+              </p>
             </div>
           </div>
 
@@ -105,7 +118,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             onClick={onMobileClose}
             aria-label="Close menu"
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white lg:hidden"
+            className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white lg:hidden"
           >
             <X size={20} />
           </button>
@@ -119,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           {menuItems.map((group, groupIndex) => (
             <div key={group.title} className="mb-5">
               <h2
-                className={`mb-1.5 px-3 text-xs font-medium text-slate-500 ${hideWhenCollapsed}`}
+                className={`mb-1.5 px-3 text-xs font-medium text-slate-500 dark:text-slate-400 ${hideWhenCollapsed}`}
               >
                 {group.title}
               </h2>
@@ -144,11 +157,15 @@ const Sidebar: React.FC<SidebarProps> = ({
                       title={collapsed ? item.name : undefined}
                       onClick={onMobileClose}
                       className={({ isActive }) =>
-                        `relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
-                          isActive
-                            ? "bg-white/10 text-white"
-                            : "text-slate-400 hover:bg-white/5 hover:text-white"
-                        } ${collapsed ? "lg:justify-center" : ""}`
+                        `relative flex items-center gap-3 rounded-lg px-3 py-2
+  text-sm font-medium transition-colors
+  focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400
+  ${
+    isActive
+      ? "bg-indigo-50 text-indigo-700 dark:bg-white/10 dark:text-white"
+      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"
+  }
+  ${collapsed ? "lg:justify-center" : ""}`
                       }
                     >
                       {({ isActive }) => (
@@ -177,13 +194,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* Collapse toggle (desktop only) */}
-        <div className="hidden shrink-0 border-t border-white/10 p-3 lg:block">
+        <div className="hidden shrink-0 border-t border-slate-200 p-3 dark:border-white/10 lg:block">
           <button
             type="button"
             onClick={onToggle}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="flex w-full items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-400 transition hover:bg-white/5 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+            className="flex w-full items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"
           >
             <ChevronLeft
               size={19}
