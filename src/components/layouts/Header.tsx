@@ -1,88 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   ChevronDown,
   ExternalLink,
-  LogOut,
   Menu,
   Moon,
-  Settings,
   Sun,
   UserRound
 } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
-
-interface HeaderProps {
-  onMenuClick?: () => void;
-}
-
-interface PageMeta {
-  title: string;
-  description: string;
-  parent?: string;
-}
-
-const pageMeta: Record<string, PageMeta> = {
-  "/video": {
-    title: "Video",
-    description: "Manage your video content"
-  },
-  "/videos": {
-    title: "Videos",
-    description: "Manage your video content"
-  },
-  "/social-links": {
-    title: "Social Links",
-    description: "Manage your social media links"
-  },
-  "/work-styles": {
-    title: "Work Styles",
-    description: "Manage your work styles"
-  },
-  "/directions": {
-    title: "Directions",
-    description: "Manage your directions"
-  },
-  "/skills": {
-    title: "Skills",
-    description: "Manage your professional skills"
-  },
-  "/projects": {
-    title: "Projects",
-    description: "Manage your projects"
-  },
-  "/experiences": {
-    title: "Experiences",
-    description: "Manage your work experience"
-  },
-  "/educations": {
-    title: "Educations",
-    description: "Manage your education history"
-  },
-  "/profile": {
-    title: "Profile",
-    description: "Manage your personal information"
-  },
-  "/curriculum": {
-    title: "Curriculum",
-    description: "Manage your CV documents"
-  },
-  "/settings": {
-    title: "Settings",
-    description: "Manage your application settings"
-  }
-};
+import LogoutButton from "../common/LogoutButton";
+import { useAuth } from "../../contexts/AuthContext";
+import { HeaderProps, PageMeta, pageMeta } from "../../types/HeaderTypes";
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const { isAuthenticated, user, authReady } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
   const { theme, toggleTheme } = useTheme();
-
   const isDark = theme === "dark";
 
   const currentPath = location.pathname;
@@ -95,14 +31,13 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     ? pageMeta[matchedPath]
     : {
         title: "Dashboard",
-        description: "Welcome to your dashboard"
+        description: "Welcome to your dashboard",
+        parent: "Dashboard"
       };
 
   const currentUser = {
-    name: "Admin User",
-    email: "admin@example.com",
-    role: "Administrator",
-    avatarUrl: "./images"
+    name: user ? user.username : "Người dùng",
+    email: user ? user.email : ""
   };
 
   const initials = currentUser.name
@@ -137,11 +72,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     };
   }, []);
 
-  const handleLogout = () => {
-    setIsOpen(false);
-    setIsAuthenticated(false);
-    navigate("/login", { replace: true });
-  };
   const headerClass = isDark
     ? "border-white/10 bg-slate-950 text-white"
     : "border-slate-200 bg-white text-slate-900";
@@ -234,7 +164,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         </a>
 
         {/* Account dropdown */}
-        {isAuthenticated ? (
+        {!authReady ? null : isAuthenticated ? (
           <div className="relative" ref={dropdownRef}>
             <button
               type="button"
@@ -243,27 +173,10 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               aria-haspopup="menu"
               className={`flex items-center gap-2 rounded-xl p-1.5 transition sm:gap-3 sm:px-2 ${hoverClass}`}
             >
-              {/* Avatar */}
-              {currentUser.avatarUrl ? (
-                <img
-                  src={currentUser.avatarUrl}
-                  alt={currentUser.name}
-                  className="h-9 w-9 rounded-full border border-white/10 object-cover"
-                />
-              ) : (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white">
-                  {initials || "AD"}
-                </div>
-              )}
-
               {/* User information */}
               <div className="hidden min-w-0 text-left md:block">
                 <p className="max-w-36 truncate text-sm font-medium">
-                  {currentUser.name}
-                </p>
-
-                <p className={`max-w-36 truncate text-xs ${mutedTextClass}`}>
-                  {currentUser.role}
+                  {initials}
                 </p>
               </div>
 
@@ -284,29 +197,13 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                 {/* User details */}
                 <div className={`border-b p-4 ${dividerClass}`}>
                   <div className="flex items-center gap-3">
-                    {currentUser.avatarUrl ? (
-                      <img
-                        src={currentUser.avatarUrl}
-                        alt={currentUser.name}
-                        className="h-10 w-10 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">
-                        {initials || "AD"}
-                      </div>
-                    )}
-
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">
-                        {currentUser.name}
+                        {initials}
                       </p>
 
                       <p className={`truncate text-xs ${mutedTextClass}`}>
                         {currentUser.email}
-                      </p>
-
-                      <p className="mt-1 text-xs font-medium text-indigo-500">
-                        {currentUser.role}
                       </p>
                     </div>
                   </div>
@@ -323,29 +220,11 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                     <UserRound size={17} />
                     <span>My Profile</span>
                   </Link>
-
-                  <Link
-                    to="/settings"
-                    role="menuitem"
-                    onClick={() => setIsOpen(false)}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${dropdownTextClass} ${hoverClass}`}
-                  >
-                    <Settings size={17} />
-                    <span>Settings</span>
-                  </Link>
                 </div>
 
                 {/* Logout */}
                 <div className={`border-t p-2 ${dividerClass}`}>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={handleLogout}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-500 transition hover:bg-red-500/10"
-                  >
-                    <LogOut size={17} />
-                    <span>Log out</span>
-                  </button>
+                  <LogoutButton onLogout={() => setIsOpen(false)} />
                 </div>
               </div>
             )}
