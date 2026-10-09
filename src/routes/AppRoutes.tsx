@@ -12,7 +12,7 @@ const AppRoutes: React.FC = () => {
   return (
     <Routes>
       {/* PUBLIC */}
-      <Route element={<UserLayout />}>
+      <Route>
         {publicRoutes.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}

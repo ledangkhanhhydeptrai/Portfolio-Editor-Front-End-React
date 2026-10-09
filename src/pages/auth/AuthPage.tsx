@@ -104,7 +104,7 @@ const LoginPage: React.FC = () => {
             removeRememberedEmail();
           }
 
-          navigate("/");
+          navigate("/video");
         }
       }
     );

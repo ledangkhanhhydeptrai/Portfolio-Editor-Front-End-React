@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function MainLayouts() {
+export default function Button() {
   return (
     <div>
       

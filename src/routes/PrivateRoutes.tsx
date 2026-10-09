@@ -1,6 +1,8 @@
+import VideoPage from "../pages/user/video/VideoPage";
+
 export const privateRoutes = [
   {
-    path: "/",
-    element: "/"
+    path: "/video",
+    element: <VideoPage />
   }
 ];
