@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   X
 } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface SidebarProps {
   collapsed?: boolean;
@@ -54,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   // On mobile the drawer is always expanded; "collapsed" only applies from lg up.
   const hideWhenCollapsed = collapsed ? "lg:hidden" : "";
-
+  const { isAuthenticated, user } = useAuth();
   React.useEffect(() => {
     if (!mobileOpen) return;
 
@@ -99,19 +100,21 @@ const Sidebar: React.FC<SidebarProps> = ({
               P
             </div>
 
-            <div className={hideWhenCollapsed}>
-              <p
-                className={`text-sm font-semibold leading-tight text-slate-900 dark:text-white ${hideWhenCollapsed}`}
-              >
-                Portfolio
-              </p>
+            {isAuthenticated && user && (
+              <div className={hideWhenCollapsed}>
+                <p
+                  className={`text-sm font-semibold leading-tight text-slate-900 dark:text-white ${hideWhenCollapsed}`}
+                >
+                  Portfolio
+                </p>
 
-              <p
-                className={`text-xs leading-tight text-slate-500 dark:text-slate-400 ${hideWhenCollapsed}`}
-              >
-                Admin
-              </p>
-            </div>
+                <p
+                  className={`text-xs leading-tight text-slate-500 dark:text-slate-400 ${hideWhenCollapsed}`}
+                >
+                  {user.username}
+                </p>
+              </div>
+            )}
           </div>
 
           <button

@@ -1,31 +1,61 @@
-/* body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Manrope:wght@400;500;600;700&display=swap");
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-} */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ---------- Theme tokens (dùng bởi các component UI) ---------- */
+:root {
+  --ui-page: #f4f6fa;
+  --ui-surface: #ffffff;
+  --ui-surface-2: #eef1f7;
+  --ui-ink: #162033;
+  --ui-muted: #5b667a;
+  --ui-line: #e1e6ef;
+  --ui-accent: #3b4eff;
+  --ui-accent-ink: #ffffff;
+  --ui-accent-soft: #e8ebff;
+  --ui-success: #12a37f;
+  --ui-success-soft: #dcf5ee;
+  --ui-warning: #b86e00;
+  --ui-warning-soft: #fdf0d8;
+  --ui-danger: #d7384b;
+  --ui-danger-soft: #fde4e7;
+  --ui-shadow:
+    0 1px 2px rgba(22, 32, 51, 0.06), 0 8px 24px -8px rgba(22, 32, 51, 0.12);
+}
+
+/* Khớp với darkMode: "class" — thêm class "dark" lên <html> để bật chế độ tối */
+.dark {
+  --ui-page: #0e1320;
+  --ui-surface: #151b2b;
+  --ui-surface-2: #1c2438;
+  --ui-ink: #e8ecf5;
+  --ui-muted: #9aa5bc;
+  --ui-line: #26304a;
+  --ui-accent: #7c8bff;
+  --ui-accent-ink: #0e1320;
+  --ui-accent-soft: #232c5a;
+  --ui-success: #3fd0ab;
+  --ui-success-soft: #123a31;
+  --ui-warning: #f0b34a;
+  --ui-warning-soft: #3b2c0f;
+  --ui-danger: #ff7686;
+  --ui-danger-soft: #431a22;
+  --ui-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.5);
+}
+
 body {
   margin: 0;
   font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas,
-    "Courier New", monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
