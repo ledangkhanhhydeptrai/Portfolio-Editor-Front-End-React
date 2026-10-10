@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { LoginRequest, LoginResponse } from "../auth/authTypes";
+import { LoginRequest } from "../auth/authTypes";
 import { ApiResponse } from "../../response/ApiResponse";
 import { fetchBaseResponse } from "../../config/fetchBaseResponse";
 import { API_CONFIG } from "../../config/api";
@@ -10,13 +10,12 @@ import { postConfig, requestConfig } from "../../config/requestConfig";
 export const AuthLogin = async ({
   email,
   password
-}: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
+}: LoginRequest): Promise<ApiResponse<null>> => {
   try {
-    const response = await fetchBaseResponse<LoginResponse>(
+    const response = await fetchBaseResponse<null>(
       `${API_CONFIG.ENDPOINTS.LOGIN}`,
       { ...postConfig(), data: { email, password } }
     );
-    console.log("response:", response.data.username);
     if (response.status !== HTTP_STATUS.OK)
       throw new Error(`HTTP_STATUS:${response.status}`);
     return response;

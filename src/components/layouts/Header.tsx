@@ -8,19 +8,24 @@ import {
   Sun,
   UserRound
 } from "lucide-react";
+
 import { useTheme } from "../../contexts/ThemeContext";
 import LogoutButton from "../common/LogoutButton";
 import { useAuth } from "../../contexts/AuthContext";
 import { HeaderProps, PageMeta, pageMeta } from "../../types/HeaderTypes";
+import Avatar from "../ui/Avatar";
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const location = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { isAuthenticated, user, authReady } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
-  const isDark = theme === "dark";
 
+  const { isAuthenticated, user, authReady } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
+
+  const isDark = theme === "dark";
   const currentPath = location.pathname;
 
   const matchedPath = Object.keys(pageMeta)
@@ -37,11 +42,13 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
   const currentUser = {
     name: user && user.fullName ? user.fullName : "Người dùng",
-    email: user && user.email ? user.email : ""
+    email: user && user.email ? user.email : "",
+    avatarUrl: user && user.avatarUrl ? user.avatarUrl : ""
   };
-  console.log("User", user && user.fullName);
+
   const initials = currentUser.name
-    .split(" ")
+    .trim()
+    .split(/\s+/)
     .map((part) => part.charAt(0))
     .slice(0, 2)
     .join("")
@@ -72,6 +79,10 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     };
   }, []);
 
+  useEffect(() => {
+    setAvatarError(false);
+  }, [currentUser.avatarUrl]);
+
   const headerClass = isDark
     ? "border-white/10 bg-slate-950 text-white"
     : "border-slate-200 bg-white text-slate-900";
@@ -89,6 +100,28 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const dropdownTextClass = isDark ? "text-slate-200" : "text-slate-700";
 
   const dividerClass = isDark ? "border-white/10" : "border-slate-200";
+
+  const renderAvatar = (sizeClass: string) => {
+    if (currentUser.avatarUrl && !avatarError) {
+      return (
+        <img
+          src={currentUser.avatarUrl}
+          alt={`${currentUser.name} avatar`}
+          className={`${sizeClass} shrink-0 rounded-full border border-slate-200/20 object-cover`}
+          onError={() => setAvatarError(true)}
+        />
+      );
+    }
+
+    return (
+      <div
+        aria-label={`${currentUser.name} avatar`}
+        className={`${sizeClass} flex shrink-0 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white`}
+      >
+        {initials}
+      </div>
+    );
+  };
 
   return (
     <header
@@ -164,19 +197,29 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         </a>
 
         {/* Account dropdown */}
-        {!authReady ? null : isAuthenticated ? (
+        {!authReady ? null : isAuthenticated && user ? (
           <div className="relative" ref={dropdownRef}>
             <button
               type="button"
               onClick={() => setIsOpen((previous) => !previous)}
               aria-expanded={isOpen}
               aria-haspopup="menu"
+              aria-label="Open account menu"
               className={`flex items-center gap-2 rounded-xl p-1.5 transition sm:gap-3 sm:px-2 ${hoverClass}`}
             >
-              {/* User information */}
+              {/* Header avatar and user name */}
+              <Avatar
+                name={currentUser.name}
+                src={currentUser.avatarUrl}
+                size={44}
+              />
+
               <div className="hidden min-w-0 text-left md:block">
                 <p className="max-w-36 truncate text-sm font-medium">
-                  {initials}
+                  {currentUser.name}
+                </p>
+                <p className={`max-w-36 truncate text-xs ${mutedTextClass}`}>
+                  {currentUser.email}
                 </p>
               </div>
 
@@ -196,10 +239,12 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               >
                 {/* User details */}
                 <div className={`border-b p-4 ${dividerClass}`}>
-                  <div className="flex items-center gap-3">
-                    <div className="min-w-0">
+                  <div className="flex min-w-0 items-center gap-3">
+                    {renderAvatar("h-11 w-11")}
+
+                    <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">
-                        {initials}
+                        {currentUser.name}
                       </p>
 
                       <p className={`truncate text-xs ${mutedTextClass}`}>

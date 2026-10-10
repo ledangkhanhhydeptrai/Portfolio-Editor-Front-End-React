@@ -19,20 +19,35 @@ export default function Modal({
   const titleId = useId();
   const dialog = useRef<HTMLDivElement>(null);
 
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     if (!open) return;
+
     const prev = document.activeElement as HTMLElement | null;
     const overflow = document.body.style.overflow;
+
     document.body.style.overflow = "hidden";
     dialog.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+
+    const onKey = (event: KeyboardEvent): void => {
+      if (event.key === "Escape") {
+        onCloseRef.current();
+      }
+    };
+
     document.addEventListener("keydown", onKey);
+
     return () => {
       document.body.style.overflow = overflow;
       document.removeEventListener("keydown", onKey);
       prev?.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
   return createPortal(

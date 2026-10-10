@@ -4,7 +4,16 @@ import { useLogin } from "../../hooks/useLogin";
 import loginStyles from "./components/loginStyles";
 import WorkBento from "./components/WorkBento";
 import LoginField from "./components/LoginField";
-import { CheckIcon, EyeIcon, LockIcon, MailIcon, ShieldIcon, Spinner } from "./components/LoginIcons";
+import {
+  CheckIcon,
+  EyeIcon,
+  LockIcon,
+  MailIcon,
+  ShieldIcon,
+  Spinner
+} from "./components/LoginIcons";
+import { Notifications } from "../../components/ui/Notification";
+import { Alert, Snackbar } from "@mui/material";
 
 const RECOVERY_PATH = "";
 
@@ -59,8 +68,7 @@ const removeRememberedEmail = (): void => {
     return;
   }
 
-  document.cookie =
-    `${REMEMBER_COOKIE_NAME}=; Max-Age=0; Path=/; SameSite=Lax`;
+  document.cookie = `${REMEMBER_COOKIE_NAME}=; Max-Age=0; Path=/; SameSite=Lax`;
 };
 
 const heading = "font-['Bricolage_Grotesque',sans-serif]";
@@ -73,7 +81,11 @@ const LoginPage: React.FC = () => {
   const [revealed, setRevealed] = React.useState<boolean>(false);
   const [remember, setRemember] = React.useState<boolean>(false);
   const [capsOn, setCapsOn] = React.useState<boolean>(false);
-
+  const [notification, setNotification] = React.useState<Notifications>({
+    open: false,
+    message: "",
+    severity: "error"
+  });
   React.useEffect(() => {
     const rememberedEmail = getRememberedEmail();
 
@@ -103,8 +115,15 @@ const LoginPage: React.FC = () => {
           } else {
             removeRememberedEmail();
           }
+          setNotification({
+            open: true,
+            message: "Đăng nhập thành công",
+            severity: "success"
+          });
 
-          navigate("/video");
+          setTimeout(() => {
+            navigate("/video");
+          }, 1500);
         }
       }
     );
@@ -416,6 +435,39 @@ const LoginPage: React.FC = () => {
           <span className="text-white/40">Portfolio Editor</span>
         </div>
       </section>
+
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={3000}
+        onClose={() => {
+          setNotification((prev) => ({
+            ...prev,
+            open: false
+          }));
+        }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right"
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setNotification((prev) => ({
+              ...prev,
+              open: false
+            }));
+          }}
+          severity={notification.severity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            borderRadius: "12px",
+            fontSize: "14px"
+          }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </main>
   );
 };

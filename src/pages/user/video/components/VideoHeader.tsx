@@ -1,5 +1,6 @@
 import React from "react";
 import { Plus } from "lucide-react";
+import Button from "../../../../components/ui/Button";
 
 interface VideoHeaderProps {
   isDark: boolean;
@@ -16,21 +17,25 @@ const VideoHeader: React.FC<VideoHeaderProps> = ({ isDark, onCreate }) => (
       >
         Videos
       </h2>
+
       <p
-        className={`mt-1 text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}
+        className={`mt-1 text-sm ${
+          isDark ? "text-slate-400" : "text-slate-600"
+        }`}
       >
         Upload, organize and publish the videos shown on your portfolio.
       </p>
     </div>
 
-    <button
+    <Button
       type="button"
+      variant="primary"
       onClick={onCreate}
-      className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+      className="!rounded-lg !bg-indigo-600 !px-4 !py-2.5 !font-medium !shadow-sm hover:!bg-indigo-700"
     >
       <Plus size={18} />
       Add video
-    </button>
+    </Button>
   </div>
 );
 
