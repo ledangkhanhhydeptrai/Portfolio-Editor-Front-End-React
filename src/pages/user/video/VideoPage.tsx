@@ -1,7 +1,7 @@
 import React from "react";
 import { useTheme } from "../../../contexts/ThemeContext";
 // TODO: adjust this path to where your useVideo hook lives.
-import { useVideo } from "../../../hooks/useVideo";
+import { DeleteVideoProps, useVideo } from "../../../hooks/useVideo";
 
 import BulkActionBar from "./components/BulkActionBar";
 import DeleteDialog from "./components/DeleteDialog";
@@ -21,8 +21,12 @@ import type { SortKey, ViewMode } from "./types";
 import { VideoEnum, VideoProps } from "../../../services/video/VideoTypes";
 import VideoCreate from "./CreateForm/VideoCreate";
 import VideoUpdateModal from "./UpdateForm/components/VideoUpdateModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { Notifications } from "../../../components/ui/Notification";
+import { Alert, Snackbar } from "@mui/material";
 
 const VideoPage: React.FC = () => {
+  const queryClient = useQueryClient();
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [isCreateModalOpen, setIsCreateModalOpen] =
@@ -36,6 +40,7 @@ const VideoPage: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = React.useState<
     VideoEnum | "OTHER"
   >("OTHER");
+
   const [sortKey, setSortKey] = React.useState<SortKey>("newest");
   const [viewMode, setViewMode] = React.useState<ViewMode>("table");
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
@@ -43,6 +48,11 @@ const VideoPage: React.FC = () => {
   const [pendingDelete, setPendingDelete] = React.useState<string[] | null>(
     null
   );
+  const [notification, setNotification] = React.useState<Notifications>({
+    open: false,
+    message: "",
+    severity: "error"
+  });
   const [toast, setToast] = React.useState<string | null>(null);
 
   /* ----- Data from the API ----- */
@@ -94,6 +104,7 @@ const VideoPage: React.FC = () => {
       }
     });
   }, [videos, searchTerm, categoryFilter, sortKey]);
+  const deleteVideoMutation = DeleteVideoProps();
 
   const totalPages = Math.max(1, Math.ceil(filteredVideos.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -160,20 +171,61 @@ const VideoPage: React.FC = () => {
         : Array.from(new Set([...prev, ...pageIds]))
     );
   };
-
-  const confirmDelete = () => {
+  const showNotification = (
+    message: string,
+    severity: Notifications["severity"]
+  ) => {
+    setNotification({
+      open: true,
+      message,
+      severity
+    });
+  };
+  const confirmDelete = async () => {
     if (!pendingDelete) return;
-    const ids = pendingDelete;
 
-    // TODO: Call the delete API (e.g. a useMutation), then invalidate
-    // queryClient.invalidateQueries({ queryKey: ["video"] }).
-    // Until then the videos are only hidden locally.
-    setRemovedIds((prev) => [...prev, ...ids]);
-    setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
-    setPendingDelete(null);
-    setToast(
-      ids.length === 1 ? "Video deleted" : `${ids.length} videos deleted`
-    );
+    const ids = [...pendingDelete];
+
+    try {
+      const responses = await Promise.all(
+        ids.map((id) => deleteVideoMutation.mutateAsync(id))
+      );
+
+      await queryClient.invalidateQueries({
+        queryKey: ["video"]
+      });
+
+      setRemovedIds((prev) =>
+        prev.concat(ids.filter((id) => !prev.includes(id)))
+      );
+
+      setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
+
+      setPendingDelete(null);
+
+      const responseMessage =
+        responses.length === 1 &&
+        typeof responses[0] === "object" &&
+        responses[0] !== null &&
+        "message" in responses[0] &&
+        typeof responses[0].message === "string"
+          ? responses[0].message
+          : ids.length === 1
+            ? "Xóa video thành công"
+            : `Đã xóa thành công ${ids.length} video`;
+
+      showNotification(responseMessage, "success");
+    } catch (error) {
+      console.error("Lỗi khi xóa video:", error);
+
+      let message = "Xóa video thất bại. Vui lòng thử lại.";
+
+      if (error instanceof Error && error.message) {
+        message = error.message;
+      }
+
+      showNotification(message, "error");
+    }
   };
 
   const clearFilters = () => {
@@ -308,6 +360,38 @@ const VideoPage: React.FC = () => {
         setIsModalOpen={setIsCreateModalOpen}
         isDark={isDark}
       />
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={3000}
+        onClose={() => {
+          setNotification((prev) => ({
+            ...prev,
+            open: false
+          }));
+        }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right"
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setNotification((prev) => ({
+              ...prev,
+              open: false
+            }));
+          }}
+          severity={notification.severity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            borderRadius: "12px",
+            fontSize: "14px"
+          }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

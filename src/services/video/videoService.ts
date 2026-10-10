@@ -114,3 +114,22 @@ export const updateVideoAPI = async (
     throw message;
   }
 };
+export const deleteVideoAPI = async (
+  id: string
+): Promise<ApiResponse<null>> => {
+  try {
+    const response = await fetchBaseResponse<null>(
+      `${API_CONFIG.ENDPOINTS.USER.VIDEO_PROJECT_USER_BY_ID(id)}`,
+      requestConfig("DELETE")
+    );
+    if (response.status !== HTTP_STATUS.OK)
+      throw new Error(`HTTP_STATUS:${response.status}`);
+    return response;
+  } catch (error) {
+    const errors = error as AxiosError<ApiResponse<string>>;
+    let message = "Delete Video Failure";
+    if (errors.response && errors.response.data && errors.response.data.message)
+      message = errors.response.data.message;
+    throw message;
+  }
+};
