@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React from "react";
 import { useTheme } from "../../../contexts/ThemeContext";
 // TODO: adjust this path to where your useVideo hook lives.
 import { useVideo } from "../../../hooks/useVideo";
@@ -19,30 +19,34 @@ import VideoTable from "./components/VideoTable";
 import { PAGE_SIZE } from "./constants";
 import type { SortKey, ViewMode } from "./types";
 import { VideoEnum, VideoProps } from "../../../services/video/VideoTypes";
+import VideoCreate from "./CreateForm/VideoCreate";
 
 const VideoPage: React.FC = () => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-
+  const [isCreateModalOpen, setIsCreateModalOpen] =
+    React.useState<boolean>(false);
   const { data, isLoading, isError, refetch } = useVideo();
 
-  const [removedIds, setRemovedIds] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<VideoEnum | "OTHER">(
-    "OTHER"
+  const [removedIds, setRemovedIds] = React.useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = React.useState<string>("");
+  const [categoryFilter, setCategoryFilter] = React.useState<
+    VideoEnum | "OTHER"
+  >("OTHER");
+  const [sortKey, setSortKey] = React.useState<SortKey>("newest");
+  const [viewMode, setViewMode] = React.useState<ViewMode>("table");
+  const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
+  const [page, setPage] = React.useState<number>(1);
+  const [pendingDelete, setPendingDelete] = React.useState<string[] | null>(
+    null
   );
-  const [sortKey, setSortKey] = useState<SortKey>("newest");
-  const [viewMode, setViewMode] = useState<ViewMode>("table");
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [page, setPage] = useState(1);
-  const [pendingDelete, setPendingDelete] = useState<string[] | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = React.useState<string | null>(null);
 
   /* ----- Data from the API ----- */
 
   // Accepts both the full response ({ status, message, data: [...] })
   // and an already-unwrapped array, depending on what the service returns.
-  const videos = useMemo<VideoProps[]>(() => {
+  const videos = React.useMemo<VideoProps[]>(() => {
     const raw: unknown = data;
     const list = Array.isArray(raw)
       ? raw
@@ -55,12 +59,12 @@ const VideoPage: React.FC = () => {
 
   /* ----- Derived data ----- */
 
-  const categories = useMemo(
+  const categories = React.useMemo(
     () => Array.from(new Set(videos.map((video) => video.category))),
     [videos]
   );
 
-  const filteredVideos = useMemo(() => {
+  const filteredVideos = React.useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
 
     const result = videos.filter((video) => {
@@ -110,11 +114,11 @@ const VideoPage: React.FC = () => {
 
   /* ----- Effects ----- */
 
-  useEffect(() => {
+  React.useEffect(() => {
     setPage(1);
   }, [searchTerm, categoryFilter, sortKey]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!toast) return;
     const timer = window.setTimeout(() => setToast(null), 3000);
     return () => window.clearTimeout(timer);
@@ -122,9 +126,8 @@ const VideoPage: React.FC = () => {
 
   /* ----- Handlers ----- */
 
-  const handleCreate = () => {
-    // TODO: Navigate to the video creation page.
-    // Example: navigate("/video/create");
+  const handleCreate = (): void => {
+    setIsCreateModalOpen(true);
   };
 
   const handleEdit = (id: string) => {
@@ -251,34 +254,42 @@ const VideoPage: React.FC = () => {
   };
 
   return (
-    <div
-      className={`flex min-h-0 flex-1 flex-col gap-6 p-2 transition-colors ${
-        isDark ? "bg-slate-950 text-slate-100" : "bg-white text-slate-900"
-      }`}
-    >
-      <VideoHeader isDark={isDark} onCreate={handleCreate} />
-
-      <VideoStats isDark={isDark} videos={videos} />
-
-      <section
-        className={`flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border shadow-sm ${
-          isDark ? "border-black bg-slate-900" : "border-slate-200 bg-white"
+    <>
+      <div
+        className={`flex min-h-0 flex-1 flex-col gap-6 p-2 transition-colors ${
+          isDark ? "bg-slate-950 text-slate-100" : "bg-white text-slate-900"
         }`}
       >
-        {renderBody()}
-      </section>
+        <VideoHeader isDark={isDark} onCreate={handleCreate} />
 
-      {pendingDelete && (
-        <DeleteDialog
-          count={pendingDelete.length}
-          title={pendingDeleteTitle}
-          onCancel={() => setPendingDelete(null)}
-          onConfirm={confirmDelete}
-        />
-      )}
+        <VideoStats isDark={isDark} videos={videos} />
 
-      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
-    </div>
+        <section
+          className={`flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border shadow-sm ${
+            isDark ? "border-black bg-slate-900" : "border-slate-200 bg-white"
+          }`}
+        >
+          {renderBody()}
+        </section>
+
+        {pendingDelete && (
+          <DeleteDialog
+            count={pendingDelete.length}
+            title={pendingDeleteTitle}
+            onCancel={() => setPendingDelete(null)}
+            onConfirm={confirmDelete}
+          />
+        )}
+
+        {toast && <Toast message={toast} onClose={() => setToast(null)} />}
+      </div>
+
+      <VideoCreate
+        isModalOpen={isCreateModalOpen}
+        setIsModalOpen={setIsCreateModalOpen}
+        isDark={isDark}
+      />
+    </>
   );
 };
 

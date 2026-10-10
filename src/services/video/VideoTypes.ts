@@ -18,3 +18,12 @@ export interface VideoProps {
   year: number;
   displayOrder: number;
 }
+export interface CreateVideo{
+  title:string;
+  description:string;
+  category: VideoEnum;
+  year:number;
+  displayOrder:number;
+  videoFile:File | null;
+  thumbnailFile:File |null;
+}

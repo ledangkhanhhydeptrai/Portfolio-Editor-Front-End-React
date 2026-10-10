@@ -1,14 +1,22 @@
 import type { AxiosRequestConfig, Method } from "axios";
 
 export const requestConfig = (
-  method: Method = "GET"
+  method: Method = "GET",
+  data?: unknown
 ): AxiosRequestConfig => {
-  return {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-    },
+  const config: AxiosRequestConfig = {
+    method
   };
+
+  if (data !== undefined) {
+    config.data = data;
+  } else {
+    config.headers = {
+      "Content-Type": "application/json"
+    };
+  }
+
+  return config;
 };
 
 export const getConfig = (): AxiosRequestConfig => {

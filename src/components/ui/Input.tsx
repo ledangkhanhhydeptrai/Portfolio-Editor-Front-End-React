@@ -7,20 +7,15 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   icon?: React.ReactNode;
 }
 
-export default function Input({
-  label,
-  hint,
-  error,
-  icon,
-  id,
-  className = "",
-  disabled,
-  ...rest
-}: InputProps) {
-  const auto = useId();
-  const inputId = id ?? auto;
+const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input(
+  { label, hint, error, icon, id, className = "", disabled, ...rest },
+  ref
+) {
+  const autoId = useId();
+  const inputId = id ? id : autoId;
   const msgId = `${inputId}-msg`;
-  const msg = error ?? hint;
+  const msg = error ? error : hint;
+
   return (
     <div className={`flex flex-col gap-1.5 font-body text-ink ${className}`}>
       {label && (
@@ -28,6 +23,7 @@ export default function Input({
           {label}
         </label>
       )}
+
       <div
         className={`flex min-h-11 items-center gap-2 rounded-xl border-[1.5px] px-3.5 transition focus-within:ring-4 ${
           error
@@ -40,15 +36,18 @@ export default function Input({
             {icon}
           </span>
         )}
+
         <input
+          {...rest}
+          ref={ref}
           id={inputId}
           disabled={disabled}
           aria-invalid={Boolean(error)}
           aria-describedby={msg ? msgId : undefined}
           className="w-full min-w-0 flex-1 bg-transparent text-[0.9375rem] text-ink outline-none placeholder:text-muted/70"
-          {...rest}
         />
       </div>
+
       {msg && (
         <span
           id={msgId}
@@ -59,4 +58,8 @@ export default function Input({
       )}
     </div>
   );
-}
+});
+
+Input.displayName = "Input";
+
+export default Input;

@@ -16,6 +16,7 @@ export const API_CONFIG = {
       EDUCATIONS_USER_ID: (id: string) => `/user/education/${id}`,
       SOCIAL_LINKS: "/user/social-link",
       SOCIAL_LINKS_USER_BY_ID: (id: string) => `/user/social-link/${id}`,
+      VIDEO:"/video",
       VIDEO_PROJECT: "/user/video",
       VIDEO_PROJECT_USER_BY_ID: (id: string) => `/user/video/${id}`,
       USERPROFILE: "/user/profile",
