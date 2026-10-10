@@ -20,6 +20,7 @@ import { PAGE_SIZE } from "./constants";
 import type { SortKey, ViewMode } from "./types";
 import { VideoEnum, VideoProps } from "../../../services/video/VideoTypes";
 import VideoCreate from "./CreateForm/VideoCreate";
+import VideoUpdateModal from "./UpdateForm/components/VideoUpdateModal";
 
 const VideoPage: React.FC = () => {
   const { theme } = useTheme();
@@ -27,7 +28,9 @@ const VideoPage: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] =
     React.useState<boolean>(false);
   const { data, isLoading, isError, refetch } = useVideo();
-
+  const [editingVideo, setEditingVideo] = React.useState<VideoProps | null>(
+    null
+  );
   const [removedIds, setRemovedIds] = React.useState<string[]>([]);
   const [searchTerm, setSearchTerm] = React.useState<string>("");
   const [categoryFilter, setCategoryFilter] = React.useState<
@@ -129,11 +132,14 @@ const VideoPage: React.FC = () => {
   const handleCreate = (): void => {
     setIsCreateModalOpen(true);
   };
+  const handleEdit = (id: string): void => {
+    const selectedVideo = videos.find((video) => video.id === id);
 
-  const handleEdit = (id: string) => {
-    // TODO: Navigate to the video editing page.
-    // Example: navigate(`/video/edit/${id}`);
-    console.log("Edit video:", id);
+    if (!selectedVideo) {
+      return;
+    }
+
+    setEditingVideo(selectedVideo);
   };
 
   const handleView = (videoUrl: string) => {
@@ -240,13 +246,26 @@ const VideoPage: React.FC = () => {
         {filteredVideos.length > 0 && (
           <Pagination
             isDark={isDark}
-            from={pageStart + 1}
-            to={pageStart + pageVideos.length}
+            from={filteredVideos.length === 0 ? 0 : pageStart + 1}
+            to={Math.min(pageStart + PAGE_SIZE, filteredVideos.length)}
             total={filteredVideos.length}
             libraryTotal={videos.length}
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setPage}
+            onPageChange={(nextPage) => {
+              setPage(Math.max(1, Math.min(nextPage, totalPages)));
+            }}
+          />
+        )}
+        {editingVideo !== null && (
+          <VideoUpdateModal
+            open={true}
+            onClose={() => setEditingVideo(null)}
+            isDark={isDark}
+            video={editingVideo}
+            onUpdated={() => {
+              refetch();
+            }}
           />
         )}
       </>

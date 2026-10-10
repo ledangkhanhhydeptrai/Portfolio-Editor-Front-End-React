@@ -2,9 +2,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   createVideoAPI,
   getAllVideoByUser,
-  getVideoByUserId
+  getVideoByUserId,
+  updateVideoAPI
 } from "../services/video/videoService";
-import { CreateVideo } from "../services/video/VideoTypes";
+import { CreateVideo, UpdateVideo } from "../services/video/VideoTypes";
 
 export const useVideo = () => {
   return useQuery({
@@ -22,5 +23,11 @@ export const CreateVideoProps = () => {
   return useMutation({
     mutationKey: ["create-video"],
     mutationFn: (data: CreateVideo) => createVideoAPI(data)
+  });
+};
+export const UpdateVideoProps = (id: string) => {
+  return useMutation({
+    mutationKey: ["update-video"],
+    mutationFn: (data: UpdateVideo) => updateVideoAPI(id, data)
   });
 };

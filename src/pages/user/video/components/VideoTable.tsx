@@ -2,7 +2,10 @@ import React from "react";
 import Checkbox from "./Checkbox";
 import Thumbnail from "./Thumbnail";
 import VideoActions from "./VideoActions";
-import { VideoEnum, VideoProps } from "../../../../services/video/VideoTypes";
+import {
+  VideoEnum,
+  VideoProps
+} from "../../../../services/video/VideoTypes";
 import { formatCategory } from "../../../../utils/formatDate";
 import { useNavigate } from "react-router-dom";
 
@@ -32,6 +35,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
   onDelete
 }) => {
   const navigate = useNavigate();
+
   return (
     <div className="min-h-0 flex-1 overflow-auto">
       <table className="w-full min-w-[720px] text-left text-sm">
@@ -48,21 +52,26 @@ const VideoTable: React.FC<VideoTableProps> = ({
                 checked={allSelected}
                 indeterminate={someSelected}
                 onChange={onToggleAll}
-                label="Select all videos on this page"
+                label="Chọn tất cả video trên trang này"
               />
             </th>
+
             <th className="px-3 py-3 font-medium">Video</th>
-            <th className="px-3 py-3 font-medium">Category</th>
-            <th className="px-3 py-3 font-medium">Year</th>
-            <th className="px-3 py-3 text-right font-medium">Order</th>
+            <th className="px-3 py-3 font-medium">Danh mục</th>
+            <th className="px-3 py-3 font-medium">Năm</th>
+            <th className="px-3 py-3 text-right font-medium">
+              Thứ tự
+            </th>
             <th className="px-5 py-3 text-right font-medium">
-              <span className="sr-only">Actions</span>
+              <span className="sr-only">Thao tác</span>
             </th>
           </tr>
         </thead>
 
         <tbody
-          className={`divide-y ${isDark ? "divide-black" : "divide-slate-100"}`}
+          className={`divide-y ${
+            isDark ? "divide-black" : "divide-slate-100"
+          }`}
         >
           {videos.map((video) => {
             const isSelected = selectedIds.includes(video.id);
@@ -84,7 +93,7 @@ const VideoTable: React.FC<VideoTableProps> = ({
                   <Checkbox
                     checked={isSelected}
                     onChange={() => onToggleSelected(video.id)}
-                    label={`Select ${video.title}`}
+                    label={`Chọn video ${video.title}`}
                   />
                 </td>
 
@@ -94,17 +103,23 @@ const VideoTable: React.FC<VideoTableProps> = ({
                       video={video}
                       className="h-14 w-24 shrink-0 rounded-md"
                     />
+
                     <div className="min-w-0 max-w-sm">
                       <p
                         className={`truncate font-semibold ${
-                          isDark ? "text-slate-100" : "text-slate-900"
+                          isDark
+                            ? "text-slate-100"
+                            : "text-slate-900"
                         }`}
                       >
                         {video.title}
                       </p>
+
                       <p
                         className={`mt-0.5 line-clamp-1 text-xs ${
-                          isDark ? "text-slate-400" : "text-slate-600"
+                          isDark
+                            ? "text-slate-400"
+                            : "text-slate-600"
                         }`}
                       >
                         {video.description}
@@ -127,7 +142,9 @@ const VideoTable: React.FC<VideoTableProps> = ({
 
                 <td
                   className={`px-3 py-3 tabular-nums ${
-                    isDark ? "text-slate-300" : "text-slate-700"
+                    isDark
+                      ? "text-slate-300"
+                      : "text-slate-700"
                   }`}
                 >
                   {video.year}
@@ -135,7 +152,9 @@ const VideoTable: React.FC<VideoTableProps> = ({
 
                 <td
                   className={`px-3 py-3 text-right font-medium tabular-nums ${
-                    isDark ? "text-slate-200" : "text-slate-800"
+                    isDark
+                      ? "text-slate-200"
+                      : "text-slate-800"
                   }`}
                 >
                   #{video.displayOrder}
@@ -146,7 +165,9 @@ const VideoTable: React.FC<VideoTableProps> = ({
                     <VideoActions
                       video={video}
                       onView={onView}
-                      onViewDetails={(id) => navigate(`/video/${id}`)}
+                      onViewDetails={(id) =>
+                        navigate(`/video/${id}`)
+                      }
                       onEdit={onEdit}
                       onDelete={(id) => onDelete([id])}
                     />
