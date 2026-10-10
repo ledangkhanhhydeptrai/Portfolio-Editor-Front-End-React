@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   createVideoAPI,
+  deleteVideoAPI,
   getAllVideoByUser,
   getVideoByUserId,
   updateVideoAPI
@@ -29,5 +30,12 @@ export const UpdateVideoProps = (id: string) => {
   return useMutation({
     mutationKey: ["update-video"],
     mutationFn: (data: UpdateVideo) => updateVideoAPI(id, data)
+  });
+};
+
+export const DeleteVideoProps = () => {
+  return useMutation({
+    mutationKey: ["delete-video"],
+    mutationFn: (id: string) => deleteVideoAPI(id)
   });
 };
