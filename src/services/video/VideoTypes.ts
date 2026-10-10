@@ -5,7 +5,7 @@ export enum VideoEnum {
   STORYTELLING = "STORYTELLING",
   COMMERCIAL = "COMMERCIAL",
   PROMOTIONAL = "PROMOTIONAL",
-  OTHER = "OTHER",
+  OTHER = "OTHER"
 }
 export interface VideoProps {
   id: string;
@@ -18,12 +18,19 @@ export interface VideoProps {
   year: number;
   displayOrder: number;
 }
-export interface CreateVideo{
-  title:string;
-  description:string;
+export interface CreateVideo {
+  title: string;
+  description: string;
   category: VideoEnum;
-  year:number;
-  displayOrder:number;
-  videoFile:File | null;
-  thumbnailFile:File |null;
+  year: number;
+  displayOrder: number;
+  videoFile: File | null;
+  thumbnailFile: File | null;
+}
+export interface UpdateVideo {
+  title: string;
+  description: string;
+  category: VideoEnum;
+  year: number;
+  displayOrder: number;
 }

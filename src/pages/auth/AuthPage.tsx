@@ -120,7 +120,6 @@ const LoginPage: React.FC = () => {
             message: "Đăng nhập thành công",
             severity: "success"
           });
-
           setTimeout(() => {
             navigate("/video");
           }, 1500);

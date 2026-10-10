@@ -11,27 +11,27 @@ export interface PageMeta {
 export const pageMeta: Record<string, PageMeta> = {
   "/video": {
     title: "Video",
-    description: "Manage your video content",
-    parent: "Dashboard"
+    description: "Quản lý nội dung video",
+    parent: "Bảng điều khiển",
   },
   "/videos": {
-    title: "Videos",
-    description: "Manage your video content",
-    parent: "Dashboard"
+    title: "Video",
+    description: "Quản lý nội dung video",
+    parent: "Bảng điều khiển",
   },
   "/social-links": {
-    title: "Social Links",
-    description: "Manage your social media links",
-    parent: "Dashboard"
+    title: "Liên kết mạng xã hội",
+    description: "Quản lý các liên kết mạng xã hội",
+    parent: "Bảng điều khiển",
   },
   "/profile": {
-    title: "Profile",
-    description: "Manage your personal information",
-    parent: "Settings"
+    title: "Thông tin cá nhân",
+    description: "Quản lý thông tin cá nhân của bạn",
+    parent: "Cài đặt",
   },
   "/settings": {
-    title: "Settings",
-    description: "Manage your application settings",
-    parent: "Dashboard"
-  }
+    title: "Cài đặt",
+    description: "Quản lý cài đặt ứng dụng",
+    parent: "Bảng điều khiển",
+  },
 };

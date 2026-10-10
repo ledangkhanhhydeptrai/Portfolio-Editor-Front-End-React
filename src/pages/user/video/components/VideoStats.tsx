@@ -9,38 +9,44 @@ interface VideoStatsProps {
 
 const VideoStats: React.FC<VideoStatsProps> = ({ isDark, videos }) => {
   const hasVideos = videos.length > 0;
-  const categoryCount = new Set(videos.map((video) => video.category)).size;
+
+  const categoryCount = new Set(
+    videos.map((video) => video.category)
+  ).size;
+
   const latestYear = hasVideos
     ? Math.max(...videos.map((video) => video.year))
     : null;
 
   const stats = [
     {
-      label: "Total videos",
+      label: "Tổng số video",
       value: videos.length.toString(),
-      hint: "In your library"
+      hint: "Video trong thư viện"
     },
     {
-      label: "Categories",
+      label: "Danh mục",
       value: categoryCount.toString(),
-      hint: "Different types of video"
+      hint: "Số danh mục video khác nhau"
     },
     {
-      label: "Latest year",
+      label: "Năm gần nhất",
       value: latestYear ? latestYear.toString() : "–",
-      hint: "Most recent work"
+      hint: "Năm thực hiện gần nhất"
     },
     {
-      label: "Total duration",
+      label: "Tổng thời lượng",
       value: hasVideos ? formatTotalDuration(videos) : "–",
-      hint: "Across all videos"
+      hint: "Thời lượng của tất cả video"
     }
   ];
 
   return (
     <dl
       className={`grid shrink-0 grid-cols-2 gap-px overflow-hidden rounded-xl border lg:grid-cols-4 ${
-        isDark ? "border-black bg-black" : "border-slate-200 bg-slate-200"
+        isDark
+          ? "border-black bg-black"
+          : "border-slate-200 bg-slate-200"
       }`}
     >
       {stats.map((stat) => (
@@ -49,7 +55,9 @@ const VideoStats: React.FC<VideoStatsProps> = ({ isDark, videos }) => {
           className={`${isDark ? "bg-slate-900" : "bg-white"} px-5 py-4`}
         >
           <dt
-            className={`text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}
+            className={`text-sm ${
+              isDark ? "text-slate-400" : "text-slate-600"
+            }`}
           >
             {stat.label}
           </dt>

@@ -26,22 +26,22 @@ interface SidebarProps {
 
 const menuItems = [
   {
-    title: "Content",
+    title: "Nội dung",
     items: [
-      { name: "Videos", path: "/video", icon: Video },
-      { name: "Social links", path: "/social-links", icon: Share2 }
+      { name: "Video", path: "/video", icon: Video },
+      { name: "Liên kết mạng xã hội", path: "/social-links", icon: Share2 }
     ]
   },
   {
-    title: "Portfolio",
+    title: "Danh mục hồ sơ",
     items: [
-      { name: "Work styles", path: "/work-styles", icon: Palette },
-      { name: "Directions", path: "/directions", icon: Compass },
-      { name: "Skills", path: "/skills", icon: Wrench },
-      { name: "Projects", path: "/projects", icon: FolderKanban },
-      { name: "Experience", path: "/experiences", icon: Briefcase },
-      { name: "Education", path: "/educations", icon: GraduationCap },
-      { name: "Profile", path: "/profile", icon: UserRound },
+      { name: "Phong cách làm việc", path: "/work-styles", icon: Palette },
+      { name: "Định hướng", path: "/directions", icon: Compass },
+      { name: "Kỹ năng", path: "/skills", icon: Wrench },
+      { name: "Dự án", path: "/projects", icon: FolderKanban },
+      { name: "Kinh nghiệm", path: "/experiences", icon: Briefcase },
+      { name: "Học vấn", path: "/educations", icon: GraduationCap },
+      { name: "Thông tin cá nhân", path: "/profile", icon: UserRound },
       { name: "CV", path: "/curriculum", icon: FileText }
     ]
   }
@@ -195,7 +195,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 : "bg-slate-100 text-slate-500 group-hover:text-slate-900 dark:bg-white/5 dark:text-slate-400 dark:group-hover:text-white"
                             }`}
                           >
-                            <Icon size={17} strokeWidth={isActive ? 2.2 : 1.8} />
+                            <Icon
+                              size={17}
+                              strokeWidth={isActive ? 2.2 : 1.8}
+                            />
                           </span>
 
                           <span className={`truncate ${hideWhenCollapsed}`}>

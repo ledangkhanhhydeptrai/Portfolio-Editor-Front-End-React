@@ -7,7 +7,10 @@ interface VideoHeaderProps {
   onCreate: () => void;
 }
 
-const VideoHeader: React.FC<VideoHeaderProps> = ({ isDark, onCreate }) => (
+const VideoHeader: React.FC<VideoHeaderProps> = ({
+  isDark,
+  onCreate
+}) => (
   <div className="flex shrink-0 flex-col justify-between gap-4 sm:flex-row sm:items-end">
     <div>
       <h2
@@ -15,7 +18,7 @@ const VideoHeader: React.FC<VideoHeaderProps> = ({ isDark, onCreate }) => (
           isDark ? "text-white" : "text-slate-900"
         }`}
       >
-        Videos
+        Quản lý video
       </h2>
 
       <p
@@ -23,7 +26,7 @@ const VideoHeader: React.FC<VideoHeaderProps> = ({ isDark, onCreate }) => (
           isDark ? "text-slate-400" : "text-slate-600"
         }`}
       >
-        Upload, organize and publish the videos shown on your portfolio.
+        Tải lên, sắp xếp và quản lý các video hiển thị trên trang portfolio của bạn.
       </p>
     </div>
 
@@ -34,7 +37,7 @@ const VideoHeader: React.FC<VideoHeaderProps> = ({ isDark, onCreate }) => (
       className="!rounded-lg !bg-indigo-600 !px-4 !py-2.5 !font-medium !shadow-sm hover:!bg-indigo-700"
     >
       <Plus size={18} />
-      Add video
+      Thêm video
     </Button>
   </div>
 );

@@ -4,16 +4,25 @@ import { VideoProps } from "../../../../services/video/VideoTypes";
 
 interface ThumbnailProps {
   video: VideoProps;
-  className: string;
+  /**
+   * Tùy chọn. Nếu truyền kích thước (vd: "h-10 w-16") thì nó sẽ thay cho
+   * kích thước mặc định bên dưới.
+   */
+  className?: string;
 }
 
-const Thumbnail: React.FC<ThumbnailProps> = ({ video, className = "" }) => {
+/** Kích thước mặc định: 80 x 48 px (tỉ lệ ~5:3), vừa mắt ở zoom 100%. */
+const DEFAULT_SIZE = "h-12 w-20";
+
+const Thumbnail: React.FC<ThumbnailProps> = ({ video, className }) => {
   const [failed, setFailed] = useState(false);
   const showImage = Boolean(video.thumbnailUrl) && !failed;
 
   return (
     <div
-      className={`relative overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300 ${className}`}
+      className={`relative max-h-36 shrink-0 overflow-hidden rounded-md bg-gradient-to-br from-slate-200 to-slate-300 ring-1 ring-black/5 dark:from-slate-700 dark:to-slate-800 dark:ring-white/10 ${
+        className && className.trim() ? className : DEFAULT_SIZE
+      }`}
     >
       {showImage ? (
         <img
@@ -25,11 +34,11 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ video, className = "" }) => {
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-slate-400">
-          <Play size={20} className="fill-current" />
+          <Play size={16} className="fill-current" />
         </div>
       )}
 
-      <span className="absolute bottom-1 right-1 rounded bg-slate-950/80 px-1.5 py-0.5 text-[11px] font-medium tabular-nums text-white">
+      <span className="absolute bottom-0.5 right-0.5 rounded bg-slate-950/80 px-1 py-px text-[10px] font-medium leading-4 tabular-nums text-white">
         {video.duration}
       </span>
     </div>

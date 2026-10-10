@@ -18,6 +18,7 @@ import Textarea from "../../../../../components/ui/Textarea";
 import Select, { SelectOption } from "../../../../../components/ui/Select";
 import { Notifications } from "../../../../../components/ui/Notification";
 import { Alert, Snackbar } from "@mui/material";
+import { formatCategory } from "../../../../../utils/formatDate";
 
 interface VideoCreateModalProps {
   open: boolean;
@@ -550,12 +551,9 @@ const VideoCreateModal: React.FC<VideoCreateModalProps> = ({
                           setCategory(event.currentTarget.value as VideoEnum)
                         }
                         options={categories.map(
-                          ([key, value]): SelectOption => ({
+                          ([value]): SelectOption => ({
                             value: String(value),
-                            label: key
-                              .replace(/_/g, " ")
-                              .toLowerCase()
-                              .replace(/\b\w/g, (char) => char.toUpperCase())
+                            label: formatCategory(value as VideoEnum)
                           })
                         )}
                       />

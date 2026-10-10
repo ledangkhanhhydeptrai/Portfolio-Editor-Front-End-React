@@ -13,16 +13,21 @@ const ErrorState: React.FC<ErrorStateProps> = ({ onRetry }) => (
     <div className="mb-3 rounded-xl bg-red-50 p-3.5">
       <AlertCircle size={24} className="text-red-500" />
     </div>
-    <p className="font-medium text-slate-900">Couldn't load your videos</p>
-    <p className="mt-1 max-w-xs text-sm text-slate-600">
-      Check your connection and try again.
+
+    <p className="font-medium text-slate-900">
+      Không thể tải danh sách video
     </p>
+
+    <p className="mt-1 max-w-xs text-sm text-slate-600">
+      Vui lòng kiểm tra kết nối mạng và thử lại.
+    </p>
+
     <button
       type="button"
       onClick={onRetry}
       className="mt-5 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
     >
-      Try again
+      Thử lại
     </button>
   </div>
 );

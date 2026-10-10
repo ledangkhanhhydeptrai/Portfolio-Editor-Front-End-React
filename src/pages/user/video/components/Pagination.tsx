@@ -3,12 +3,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
   isDark: boolean;
-  /** 1-based index of the first / last item shown on this page. */
   from: number;
   to: number;
-  /** Items matching the current filters. */
   total: number;
-  /** All items in the library (used for the "filtered from" hint). */
   libraryTotal: number;
   currentPage: number;
   totalPages: number;
@@ -31,6 +28,18 @@ const Pagination: React.FC<PaginationProps> = ({
       : "hover:bg-slate-100 disabled:hover:bg-transparent"
   }`;
 
+  const handlePrevious = (): void => {
+    if (currentPage > 1) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const handleNext = (): void => {
+    if (currentPage < totalPages) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
   return (
     <div
       className={`flex shrink-0 flex-col gap-3 border-t px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-5 ${
@@ -40,30 +49,31 @@ const Pagination: React.FC<PaginationProps> = ({
       }`}
     >
       <p>
-        Showing {from}–{to} of {total}
-        {total !== libraryTotal && ` (filtered from ${libraryTotal})`}
+        Hiển thị {from}–{to} trong tổng số {total}
+        {total !== libraryTotal &&
+          ` (đã lọc từ ${libraryTotal} video)`}
       </p>
 
       <div className="flex items-center gap-1">
         <button
           type="button"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          aria-label="Previous page"
+          onClick={handlePrevious}
+          disabled={currentPage <= 1 || total === 0}
+          aria-label="Trang trước"
           className={arrowClass}
         >
           <ChevronLeft size={16} />
         </button>
 
         <span className="px-2 tabular-nums">
-          Page {currentPage} of {totalPages}
+          Trang {total === 0 ? 0 : currentPage} / {totalPages}
         </span>
 
         <button
           type="button"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          aria-label="Next page"
+          onClick={handleNext}
+          disabled={currentPage >= totalPages || total === 0}
+          aria-label="Trang tiếp theo"
           className={arrowClass}
         >
           <ChevronRight size={16} />
