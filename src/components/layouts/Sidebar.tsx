@@ -56,6 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   // On mobile the drawer is always expanded; "collapsed" only applies from lg up.
   const hideWhenCollapsed = collapsed ? "lg:hidden" : "";
   const { isAuthenticated, user } = useAuth();
+
   React.useEffect(() => {
     if (!mobileOpen) return;
 
@@ -72,45 +73,55 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Backdrop for the mobile drawer */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-[45] bg-slate-900/50 lg:hidden"
+          className="fixed inset-0 z-[45] bg-slate-900/50 backdrop-blur-sm lg:hidden"
           onClick={onMobileClose}
           aria-hidden="true"
         />
       )}
 
+      {/*
+        Mobile: drawer cố định.
+        Desktop (lg+): nằm cạnh nội dung, cao full màn hình và dính ở top-0,
+        nên Header giờ nằm bên phải sidebar.
+      */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-64 flex-col
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-64 flex-col overflow-hidden
   border-r border-slate-200 bg-white text-slate-900
   transition-all duration-300
   dark:border-white/10 dark:bg-slate-950 dark:text-white
-  lg:sticky lg:bottom-auto lg:top-16 lg:z-30
-  lg:h-[calc(100vh-4rem)] lg:translate-x-0
+  lg:sticky lg:top-0 lg:z-30 lg:translate-x-0 lg:self-start
   ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
   ${collapsed ? "lg:w-20" : "lg:w-64"}`}
       >
+        {/* Decorative glow */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-indigo-500/15 via-purple-500/5 to-transparent"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-indigo-500/10 blur-3xl"
+        />
+
         {/* Brand */}
         <div
-          className={`flex h-16 shrink-0 items-center justify-between
+          className={`relative flex h-20 shrink-0 items-center justify-between
   border-b border-slate-200 px-5
   dark:border-white/10
   ${collapsed ? "lg:justify-center lg:px-0" : ""}`}
         >
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-500 text-base font-bold text-white">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-lg font-bold text-white shadow-lg shadow-indigo-500/30">
               P
             </div>
 
             {isAuthenticated && user && (
-              <div className={hideWhenCollapsed}>
-                <p
-                  className={`text-sm font-semibold leading-tight text-slate-900 dark:text-white ${hideWhenCollapsed}`}
-                >
+              <div className={`min-w-0 ${hideWhenCollapsed}`}>
+                <p className="truncate text-sm font-semibold leading-tight text-slate-900 dark:text-white">
                   Portfolio
                 </p>
 
-                <p
-                  className={`text-xs leading-tight text-slate-500 dark:text-slate-400 ${hideWhenCollapsed}`}
-                >
+                <p className="mt-0.5 truncate text-xs leading-tight text-slate-500 dark:text-slate-400">
                   {user.fullName}
                 </p>
               </div>
@@ -130,10 +141,10 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Navigation */}
         <nav
           aria-label="Main navigation"
-          className="flex-1 overflow-y-auto px-3 py-4"
+          className="relative flex-1 overflow-y-auto px-3 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {menuItems.map((group, groupIndex) => (
-            <div key={group.title} className="mb-5">
+            <div key={group.title} className="mb-3">
               <h2
                 className={`mb-1.5 px-3 text-xs font-medium text-slate-500 dark:text-slate-400 ${hideWhenCollapsed}`}
               >
@@ -143,7 +154,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               {/* Divider replaces the group title when collapsed */}
               {groupIndex > 0 && (
                 <div
-                  className={`mx-3 mb-3 hidden h-px bg-white/10 ${
+                  className={`mx-3 mb-3 hidden h-px bg-slate-200 dark:bg-white/10 ${
                     collapsed ? "lg:block" : ""
                   }`}
                 />
@@ -160,28 +171,32 @@ const Sidebar: React.FC<SidebarProps> = ({
                       title={collapsed ? item.name : undefined}
                       onClick={onMobileClose}
                       className={({ isActive }) =>
-                        `relative flex items-center gap-3 rounded-lg px-3 py-2
+                        `group relative flex items-center gap-3 rounded-xl px-2 py-1
   text-sm font-medium transition-colors
   focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400
   ${
     isActive
-      ? "bg-indigo-50 text-indigo-700 dark:bg-white/10 dark:text-white"
+      ? "bg-gradient-to-r from-indigo-500/15 via-indigo-500/5 to-transparent text-indigo-700 dark:text-white"
       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"
   }
-  ${collapsed ? "lg:justify-center" : ""}`
+  ${collapsed ? "lg:justify-center lg:px-0" : ""}`
                       }
                     >
                       {({ isActive }) => (
                         <>
                           {isActive && (
-                            <span className="absolute -left-3 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r bg-indigo-400" />
+                            <span className="absolute -left-3 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-indigo-400" />
                           )}
 
-                          <Icon
-                            size={19}
-                            strokeWidth={isActive ? 2.2 : 1.8}
-                            className="shrink-0"
-                          />
+                          <span
+                            className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg transition ${
+                              isActive
+                                ? "bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/30"
+                                : "bg-slate-100 text-slate-500 group-hover:text-slate-900 dark:bg-white/5 dark:text-slate-400 dark:group-hover:text-white"
+                            }`}
+                          >
+                            <Icon size={17} strokeWidth={isActive ? 2.2 : 1.8} />
+                          </span>
 
                           <span className={`truncate ${hideWhenCollapsed}`}>
                             {item.name}
@@ -197,13 +212,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* Collapse toggle (desktop only) */}
-        <div className="hidden shrink-0 border-t border-slate-200 p-3 dark:border-white/10 lg:block">
+        <div className="relative hidden shrink-0 border-t border-slate-200 p-2 dark:border-white/10 lg:block">
           <button
             type="button"
             onClick={onToggle}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="flex w-full items-center justify-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"
+            className="flex w-full items-center justify-center gap-3 rounded-xl px-3 py-1.5 text-sm text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white"
           >
             <ChevronLeft
               size={19}

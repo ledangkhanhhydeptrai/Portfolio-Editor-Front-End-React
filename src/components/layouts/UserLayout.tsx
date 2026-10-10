@@ -9,20 +9,20 @@ const UserLayout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-white">
-      {/* Header cố định ở phía trên */}
-      <Header onMenuClick={() => setMobileOpen(true)} />
+    <div className="flex h-screen overflow-hidden bg-white">
+      {/* Sidebar bên trái: cao full màn hình, logo nằm trên cùng */}
+      <Sidebar
+        collapsed={collapsed}
+        onToggle={() => setCollapsed((prev) => !prev)}
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setMobileOpen(false)}
+      />
 
-      <div className="flex min-h-0 flex-1">
-        {/* Sidebar bên trái */}
-        <Sidebar
-          collapsed={collapsed}
-          onToggle={() => setCollapsed((prev) => !prev)}
-          mobileOpen={mobileOpen}
-          onMobileClose={() => setMobileOpen(false)}
-        />
+      {/* Cột bên phải: Header ở trên, nội dung bên dưới */}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        <Header onMenuClick={() => setMobileOpen(true)} />
 
-        {/* Nội dung CRUD bên phải: phủ kín toàn bộ phần còn lại */}
+        {/* Nội dung CRUD: phủ kín toàn bộ phần còn lại */}
         <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-white">
           <Outlet />
         </main>

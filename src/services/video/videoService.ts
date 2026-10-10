@@ -73,7 +73,7 @@ export const createVideoAPI = async ({
   if (thumbnailFile) formData.append("thumbnailFile", thumbnailFile);
   try {
     const response = await fetchBaseResponse<VideoProps>(
-      `${API_CONFIG.ENDPOINTS.USER.VIDEO}`,
+      `${API_CONFIG.ENDPOINTS.USER.VIDEO_PROJECT}`,
       requestConfig("POST", formData)
     );
     if (response.status !== HTTP_STATUS.OK)
