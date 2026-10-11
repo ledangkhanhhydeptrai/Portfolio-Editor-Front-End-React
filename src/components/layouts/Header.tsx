@@ -6,17 +6,13 @@ import {
   Menu,
   Moon,
   Sun,
-  UserRound,
+  UserRound
 } from "lucide-react";
 
 import { useTheme } from "../../contexts/ThemeContext";
 import LogoutButton from "../common/LogoutButton";
 import { useAuth } from "../../contexts/AuthContext";
-import {
-  HeaderProps,
-  PageMeta,
-  pageMeta,
-} from "../../types/HeaderTypes";
+import { HeaderProps, PageMeta, pageMeta } from "../../types/HeaderTypes";
 import Avatar from "../ui/Avatar";
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
@@ -33,23 +29,22 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
   const matchedPath = Object.keys(pageMeta)
     .sort((a, b) => b.length - a.length)
-    .find(
-      (path) =>
-        currentPath === path || currentPath.startsWith(`${path}/`)
-    );
+    .find((path) => {
+      return currentPath === path || currentPath.startsWith(`${path}/`);
+    });
 
   const currentPage: PageMeta = matchedPath
     ? pageMeta[matchedPath]
     : {
         title: "Bảng điều khiển",
         description: "Chào mừng bạn đến với bảng điều khiển",
-        parent: "Bảng điều khiển",
+        parent: "Bảng điều khiển"
       };
 
   const currentUser = {
     name: user && user.fullName ? user.fullName : "Người dùng",
     email: user && user.email ? user.email : "",
-    avatarUrl: user && user.avatarUrl ? user.avatarUrl : "",
+    avatarUrl: user && user.avatarUrl ? user.avatarUrl : ""
   };
 
   useEffect(() => {
@@ -81,9 +76,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     ? "border-white/10 bg-slate-950/80 text-white"
     : "border-slate-200 bg-white/80 text-slate-900";
 
-  const mutedTextClass = isDark
-    ? "text-slate-400"
-    : "text-slate-500";
+  const mutedTextClass = isDark ? "text-slate-400" : "text-slate-500";
 
   const hoverClass = isDark
     ? "hover:bg-white/10 hover:text-white"
@@ -93,13 +86,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     ? "border-white/10 bg-slate-900"
     : "border-slate-200 bg-white";
 
-  const dropdownTextClass = isDark
-    ? "text-slate-200"
-    : "text-slate-700";
+  const dropdownTextClass = isDark ? "text-slate-200" : "text-slate-700";
 
-  const dividerClass = isDark
-    ? "border-white/10"
-    : "border-slate-200";
+  const dividerClass = isDark ? "border-white/10" : "border-slate-200";
 
   return (
     <header
@@ -173,9 +162,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           type="button"
           onClick={toggleTheme}
           aria-label={
-            isDark
-              ? "Chuyển sang giao diện sáng"
-              : "Chuyển sang giao diện tối"
+            isDark ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối"
           }
           title={isDark ? "Giao diện sáng" : "Giao diện tối"}
           className={`rounded-xl p-2.5 transition ${hoverClass}`}
@@ -231,9 +218,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                   {currentUser.name}
                 </p>
 
-                <p
-                  className={`max-w-36 truncate text-xs ${mutedTextClass}`}
-                >
+                <p className={`max-w-36 truncate text-xs ${mutedTextClass}`}>
                   {currentUser.email}
                 </p>
               </div>
@@ -267,9 +252,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
                 {/* Đăng xuất */}
                 <div className={`border-t p-2 ${dividerClass}`}>
-                  <LogoutButton
-                    onLogout={() => setIsOpen(false)}
-                  />
+                  <LogoutButton onLogout={() => setIsOpen(false)} />
                 </div>
               </div>
             )}
