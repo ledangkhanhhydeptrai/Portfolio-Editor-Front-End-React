@@ -1,21 +1,33 @@
 import React, { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 
+export type ModalSize = "md" | "lg" | "xl";
+
 export interface ModalProps {
   open: boolean;
   onClose: () => void;
   title: string;
   children?: React.ReactNode;
   footer?: React.ReactNode;
+  /** Độ rộng tối đa của hộp thoại. Mặc định "md" (480px) để các modal cũ không đổi. */
+  size?: ModalSize;
 }
+
+/** Giữ nguyên chuỗi class đầy đủ để Tailwind nhận diện được. */
+const SIZE_CLASS: Record<ModalSize, string> = {
+  md: "max-w-[480px]",
+  lg: "max-w-[640px]",
+  xl: "max-w-[880px]"
+};
 
 export default function Modal({
   open,
   onClose,
   title,
   children,
-  footer
-}: ModalProps) {
+  footer,
+  size = "md"
+}: ModalProps): React.JSX.Element | null {
   const titleId = useId();
   const dialog = useRef<HTMLDivElement>(null);
 
@@ -61,7 +73,7 @@ export default function Modal({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="flex max-h-[calc(100dvh-40px)] w-full max-w-[480px] flex-col gap-4 overflow-auto rounded-[20px] border border-line bg-surface p-6 font-body text-ink shadow-card focus:outline-none motion-safe:animate-rise"
+        className={`flex max-h-[calc(100dvh-40px)] w-full ${SIZE_CLASS[size]} flex-col gap-4 overflow-auto rounded-[20px] border border-line bg-surface p-6 font-body text-ink shadow-card focus:outline-none motion-safe:animate-rise`}
       >
         <div className="flex items-start justify-between gap-4">
           <h2
@@ -71,8 +83,9 @@ export default function Modal({
             {title}
           </h2>
           <button
+            type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label="Đóng"
             className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-full text-muted hover:bg-surface2 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             <svg
@@ -83,6 +96,7 @@ export default function Modal({
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
+              aria-hidden="true"
             >
               <path d="M3 3l10 10M13 3L3 13" />
             </svg>
