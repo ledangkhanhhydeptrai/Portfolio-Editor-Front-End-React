@@ -12,10 +12,13 @@ import {
   Globe,
   CalendarCheck,
   AlertCircle,
-  RefreshCw,
+  RefreshCw
 } from "lucide-react";
 import { useCurrentUser } from "../../../hooks/useCurrentUser";
 import { useTheme } from "../../../contexts/ThemeContext";
+import Modal from "../../../components/ui/Modal";
+import UpdateFormProfile from "./UpdateFormProfile/UpdateFormProfile";
+import { Alert, Snackbar } from "@mui/material";
 
 /* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
@@ -102,7 +105,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
   subtitle,
   children,
   className = "",
-  bodyClassName = "",
+  bodyClassName = ""
 }) => (
   <section
     className={`flex min-h-0 flex-col overflow-hidden rounded-2xl border border-line bg-surface ${className}`}
@@ -164,13 +167,14 @@ const InfoItem: React.FC<InfoItemProps> = ({ icon, label, value, href }) => {
 
 export default function ProfilePage(): React.JSX.Element {
   const { theme } = useTheme();
-
+  const [isEditOpen, setIsEditOpen] = React.useState(false);
+const [showSuccess, setShowSuccess] = React.useState(false);
   const {
     data: response,
     isLoading,
     isError,
     error,
-    refetch,
+    refetch
   } = useCurrentUser();
 
   const profile: Profile | null = response?.data ?? null;
@@ -243,11 +247,11 @@ export default function ProfilePage(): React.JSX.Element {
     { label: "CV", done: hasText(cvUrl) },
     { label: "mô tả ngắn", done: hasText(profile.shortDescription) },
     { label: "giới thiệu về tôi", done: hasText(profile.aboutMe) },
-    { label: "châm ngôn", done: hasText(quote) },
+    { label: "châm ngôn", done: hasText(quote) }
   ];
   const missing: CompletenessItem[] = completeness.filter((c) => !c.done);
   const percent: number = Math.round(
-    ((completeness.length - missing.length) / completeness.length) * 100,
+    ((completeness.length - missing.length) / completeness.length) * 100
   );
 
   return (
@@ -283,11 +287,7 @@ export default function ProfilePage(): React.JSX.Element {
 
                   <button
                     type="button"
-                    onClick={() => {
-                      window.alert(
-                        "Chức năng chỉnh sửa hồ sơ chưa được tích hợp.",
-                      );
-                    }}
+                    onClick={() => setIsEditOpen(true)}
                     className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 active:scale-[0.98] ${focusRing}`}
                   >
                     <Pencil size={15} aria-hidden="true" />
@@ -490,7 +490,9 @@ export default function ProfilePage(): React.JSX.Element {
                     : "border-line text-muted"
                 }`}
               >
-                {hasText(quote) ? quote : "Bạn chưa cập nhật châm ngôn cá nhân."}
+                {hasText(quote)
+                  ? quote
+                  : "Bạn chưa cập nhật châm ngôn cá nhân."}
               </blockquote>
             </SectionCard>
 
@@ -501,6 +503,37 @@ export default function ProfilePage(): React.JSX.Element {
           </div>
         </div>
       </div>
+     <Modal
+  open={isEditOpen}
+  onClose={() => setIsEditOpen(false)}
+  title="Chỉnh sửa hồ sơ"
+  size="2xl"
+>
+  <UpdateFormProfile
+    onClose={() => {
+      setIsEditOpen(false);
+      setShowSuccess(true);
+    }}
+  />
+</Modal>
+
+<Snackbar
+  open={showSuccess}
+  autoHideDuration={3000}
+  onClose={() => setShowSuccess(false)}
+  anchorOrigin={{
+    vertical: "top",
+    horizontal: "right"
+  }}
+>
+  <Alert
+    severity="success"
+    variant="filled"
+    onClose={() => setShowSuccess(false)}
+  >
+    Cập nhật hồ sơ thành công!
+  </Alert>
+</Snackbar>
     </div>
   );
 }

@@ -11,6 +11,8 @@ import {
 } from "./components";
 import Modal from "../../../components/ui/Modal";
 import FormCreateProfile from "../profile/FormCreateProfile/FormCreateProfile";
+import { Notifications } from "../../../components/ui/Notification";
+import { Alert, Snackbar } from "@mui/material";
 
 const ProfileTablePage: React.FC = () => {
   const { data, isLoading, isError, refetch, isFetching } = useCurrentUser();
@@ -33,7 +35,11 @@ const ProfileTablePage: React.FC = () => {
   const [workDirection, setWorkDirection] = React.useState("");
 
   const { mutate } = useCreateCurrentUser();
-
+  const [notification, setNotification] = React.useState<Notifications>({
+    open: false,
+    message: "",
+    severity: "error"
+  });
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -58,6 +64,11 @@ const ProfileTablePage: React.FC = () => {
       },
       {
         onSuccess: () => {
+          setNotification({
+            open: true,
+            message: "Tạo hồ sơ thành công",
+            severity: "success"
+          });
           setIsCreateOpen(false);
           void refetch();
         }
@@ -160,6 +171,38 @@ const ProfileTablePage: React.FC = () => {
           />
         </Modal>
       </div>
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={3000}
+        onClose={() => {
+          setNotification((prev) => ({
+            ...prev,
+            open: false
+          }));
+        }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right"
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setNotification((prev) => ({
+              ...prev,
+              open: false
+            }));
+          }}
+          severity={notification.severity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            borderRadius: "12px",
+            fontSize: "14px"
+          }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

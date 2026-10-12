@@ -1,6 +1,6 @@
 export interface UserProfile {
   aboutMe: string;
-  availabilityStatus: string | null;
+  availabilityStatus: string;
   avatarUrl: string;
   cvUrl: string;
   email: string;
@@ -9,9 +9,9 @@ export interface UserProfile {
   jobTitle: string;
   location: string;
   phone: string;
-  quote: string | null;
+  quote: string;
   shortDescription: string;
-  workDirection: string | null;
+  workDirection: string;
 }
 export interface CreateUserProfile {
   aboutMe: string;

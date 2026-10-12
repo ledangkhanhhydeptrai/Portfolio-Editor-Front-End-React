@@ -118,7 +118,7 @@ export const UpdateProfile = async ({
         workDirection
       })
     );
-    if (response.status !== HTTP_STATUS.CREATED) {
+    if (response.status !== HTTP_STATUS.OK) {
       throw new Error(`HTTP_STATUS:${response.status}`);
     }
 
