@@ -4,7 +4,11 @@ import { fetchBaseResponse } from "../../config/fetchBaseResponse";
 import { API_CONFIG } from "../../config/api";
 import { requestConfig } from "../../config/requestConfig";
 import { HTTP_STATUS } from "../../constants/api";
-import { CreateUserProfile, UserProfile } from "./profileTypes";
+import {
+  CreateUserProfile,
+  UpdateProfileProps,
+  UserProfile
+} from "./profileTypes";
 
 export const getCurrentUser = async (): Promise<ApiResponse<UserProfile>> => {
   try {
@@ -43,6 +47,7 @@ export const CreateProfile = async ({
   workDirection
 }: CreateUserProfile): Promise<ApiResponse<UserProfile>> => {
   const formData = new FormData();
+
   formData.append("aboutMe", aboutMe);
   formData.append("availabilityStatus", availabilityStatus);
   formData.append("cvUrl", cvUrl);
@@ -54,18 +59,26 @@ export const CreateProfile = async ({
   formData.append("quote", quote);
   formData.append("shortDescription", shortDescription);
   formData.append("workDirection", workDirection);
-  if (avatarUrl) formData.append("avatarUrl", avatarUrl);
+
+  if (avatarUrl !== null) {
+    formData.append("avatarUrl", avatarUrl);
+  }
+
   try {
     const response = await fetchBaseResponse<UserProfile>(
-      `${API_CONFIG.ENDPOINTS.USER.PROFILE}`,
+      API_CONFIG.ENDPOINTS.USER.PROFILE,
       requestConfig("POST", formData)
     );
-    if (response.status !== HTTP_STATUS.OK)
+
+    if (response.status !== HTTP_STATUS.CREATED) {
       throw new Error(`HTTP_STATUS:${response.status}`);
+    }
+
     return response;
   } catch (error) {
     const errors = error as AxiosError<ApiResponse<string>>;
     let message = "Create Profile Failure";
+
     if (
       errors.response &&
       errors.response.data &&
@@ -73,6 +86,55 @@ export const CreateProfile = async ({
     ) {
       message = errors.response.data.message;
     }
+
+    throw message;
+  }
+};
+export const UpdateProfile = async ({
+  aboutMe,
+  availabilityStatus,
+  email,
+  fullName,
+  jobTitle,
+  location,
+  phone,
+  quote,
+  shortDescription,
+  workDirection
+}: UpdateProfileProps): Promise<ApiResponse<UserProfile>> => {
+  try {
+    const response = await fetchBaseResponse<UserProfile>(
+      `${API_CONFIG.ENDPOINTS.USER.USERPROFILE}`,
+      requestConfig("PUT", {
+        aboutMe,
+        availabilityStatus,
+        email,
+        fullName,
+        jobTitle,
+        location,
+        phone,
+        quote,
+        shortDescription,
+        workDirection
+      })
+    );
+    if (response.status !== HTTP_STATUS.CREATED) {
+      throw new Error(`HTTP_STATUS:${response.status}`);
+    }
+
+    return response;
+  } catch (error) {
+    const errors = error as AxiosError<ApiResponse<string>>;
+    let message = "Create Profile Failure";
+
+    if (
+      errors.response &&
+      errors.response.data &&
+      errors.response.data.message
+    ) {
+      message = errors.response.data.message;
+    }
+
     throw message;
   }
 };

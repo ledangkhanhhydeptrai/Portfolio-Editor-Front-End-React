@@ -41,7 +41,7 @@ const menuItems = [
       { name: "Dự án", path: "/projects", icon: FolderKanban },
       { name: "Kinh nghiệm", path: "/experiences", icon: Briefcase },
       { name: "Học vấn", path: "/educations", icon: GraduationCap },
-      { name: "Thông tin cá nhân", path: "/profile", icon: UserRound },
+      { name: "Thông tin cá nhân", path: "/profile/table", icon: UserRound },
       { name: "CV", path: "/curriculum", icon: FileText }
     ]
   }
@@ -122,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </p>
 
                 <p className="mt-0.5 truncate text-xs leading-tight text-slate-500 dark:text-slate-400">
-                  {user.fullName}
+                  {user.username}
                 </p>
               </div>
             )}

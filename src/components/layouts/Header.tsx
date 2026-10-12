@@ -13,7 +13,6 @@ import { useTheme } from "../../contexts/ThemeContext";
 import LogoutButton from "../common/LogoutButton";
 import { useAuth } from "../../contexts/AuthContext";
 import { HeaderProps, PageMeta, pageMeta } from "../../types/HeaderTypes";
-import Avatar from "../ui/Avatar";
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const location = useLocation();
@@ -42,9 +41,8 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
       };
 
   const currentUser = {
-    name: user && user.fullName ? user.fullName : "Người dùng",
+    name: user && user.username ? user.username : "Người dùng",
     email: user && user.email ? user.email : "",
-    avatarUrl: user && user.avatarUrl ? user.avatarUrl : ""
   };
 
   useEffect(() => {
@@ -205,13 +203,13 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               className={`flex items-center gap-2 rounded-2xl p-1.5 transition sm:gap-3 sm:pr-3 ${hoverClass}`}
             >
               {/* Ảnh đại diện và tên người dùng */}
-              <span className="rounded-full p-0.5 ring-2 ring-indigo-500/40">
+              {/* <span className="rounded-full p-0.5 ring-2 ring-indigo-500/40">
                 <Avatar
                   name={currentUser.name}
                   src={currentUser.avatarUrl}
                   size={40}
                 />
-              </span>
+              </span> */}
 
               <div className="hidden min-w-0 text-left md:block">
                 <p className="max-w-36 truncate text-sm font-semibold">
