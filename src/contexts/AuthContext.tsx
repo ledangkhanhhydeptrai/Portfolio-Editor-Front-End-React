@@ -1,5 +1,9 @@
-import React, { createContext, useContext, useState } from "react";
-import { LoginResponse } from "../services/auth/authTypes";
+import React, {
+  createContext,
+  useContext,
+  useState,
+} from "react";
+import type { LoginResponse } from "../services/auth/authTypes";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -19,10 +23,48 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<LoginResponse | null>(null);
-  const [role, setRole] = useState<string | null>(null);
-  const [authReady, setAuthReady] = useState(false);
+  const [user, setUser] = useState<LoginResponse | null>(() => {
+    const savedUser = sessionStorage.getItem("auth_user");
+
+    if (savedUser === null) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(savedUser) as LoginResponse;
+    } catch {
+      sessionStorage.removeItem("auth_user");
+      return null;
+    }
+  });
+
+  const [isAuthenticated, setIsAuthenticated] = useState(user !== null);
+  const [role, setRole] = useState<string | null>(
+    user === null ? null : user.role
+  );
+  const [authReady, setAuthReady] = useState(true);
+
+  const updateUser = (
+    nextUser: React.SetStateAction<LoginResponse | null>
+  ) => {
+    setUser((currentUser) => {
+      const resolvedUser =
+        typeof nextUser === "function"
+          ? nextUser(currentUser)
+          : nextUser;
+
+      if (resolvedUser === null) {
+        sessionStorage.removeItem("auth_user");
+      } else {
+        sessionStorage.setItem(
+          "auth_user",
+          JSON.stringify(resolvedUser)
+        );
+      }
+
+      return resolvedUser;
+    });
+  };
 
   return (
     <AuthContext.Provider
@@ -30,11 +72,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         isAuthenticated,
         setIsAuthenticated,
         user,
-        setUser,
+        setUser: updateUser,
         role,
         setRole,
         authReady,
-        setAuthReady
+        setAuthReady,
       }}
     >
       {children}
