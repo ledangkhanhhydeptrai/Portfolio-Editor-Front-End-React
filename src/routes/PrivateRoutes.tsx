@@ -1,4 +1,5 @@
 import ProfilePage from "../pages/user/profile/ProfilePage";
+import ProfileTablePage from "../pages/user/profileTable/ProfilePage";
 import SocialLinkById from "../pages/user/social-link/SocialLinkById";
 import SocialLinkPage from "../pages/user/social-link/SocialLinkPage";
 import VideoIdPage from "../pages/user/video/VideoIdPage";
@@ -34,5 +35,9 @@ export const privateRoutes = [
   {
     path: "/social-links/:id",
     element: <SocialLinkById />
+  },
+  {
+    path: "/profile/table",
+    element: <ProfileTablePage />
   }
 ];

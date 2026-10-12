@@ -63,4 +63,50 @@ export interface CreateUserProps {
 
   workDirection: string;
   setWorkDirection: (value: string) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+}
+export interface UpdateProfileProps {
+  fullName: string;
+  jobTitle: string;
+  shortDescription: string;
+  aboutMe: string;
+  email: string;
+  phone: string;
+  location: string;
+  workDirection: string;
+  availabilityStatus: string;
+  quote: string;
+}
+export interface FormUpdateProfileProps {
+  fullName: string;
+  setFullName: (value: string) => void;
+
+  jobTitle: string;
+  setJobTitle: (value: string) => void;
+
+  shortDescription: string;
+  setShortDescription: (value: string) => void;
+
+  aboutMe: string;
+  setAboutMe: (value: string) => void;
+
+  email: string;
+  setEmail: (value: string) => void;
+
+  phone: string;
+  setPhone: (value: string) => void;
+
+  location: string;
+  setLocation: (value: string) => void;
+
+  workDirection: string;
+  setWorkDirection: (value: string) => void;
+
+  availabilityStatus: string;
+  setAvailabilityStatus: (value: string) => void;
+
+  quote: string;
+  setQuote: (value: string) => void;
+
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }

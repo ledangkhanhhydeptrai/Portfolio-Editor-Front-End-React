@@ -1,27 +1,39 @@
-
 import { useMutation } from "@tanstack/react-query";
 import { AuthLogin } from "../services/auth/authService";
-import { getCurrentUser } from "../services/profile/profileService";
-import { LoginRequest } from "../services/auth/authTypes";
+import type { LoginRequest } from "../services/auth/authTypes";
 import { useAuth } from "../contexts/AuthContext";
 
 export const useLogin = () => {
-  const { setIsAuthenticated, setUser } = useAuth();
+  const {
+    setIsAuthenticated,
+    setUser,
+    setRole,
+    setAuthReady,
+  } = useAuth();
 
   return useMutation({
-    mutationFn: async (payload: LoginRequest) => {
-      await AuthLogin(payload);
-      return getCurrentUser();
-    },
+    mutationFn: (payload: LoginRequest) => AuthLogin(payload),
+
     onSuccess: (response) => {
       if (response.status !== 200 || !response.data) {
-        setIsAuthenticated(false);
         setUser(null);
+        setRole(null);
+        setIsAuthenticated(false);
+        setAuthReady(true);
         return;
       }
 
       setUser(response.data);
+      setRole(response.data.role);
       setIsAuthenticated(true);
+      setAuthReady(true);
+    },
+
+    onError: () => {
+      setUser(null);
+      setRole(null);
+      setIsAuthenticated(false);
+      setAuthReady(true);
     },
   });
 };

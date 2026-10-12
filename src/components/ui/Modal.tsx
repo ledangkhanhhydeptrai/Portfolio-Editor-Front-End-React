@@ -1,7 +1,7 @@
 import React, { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 
-export type ModalSize = "md" | "lg" | "xl";
+export type ModalSize = "md" | "lg" | "xl"|"2xl";
 
 export interface ModalProps {
   open: boolean;
@@ -17,7 +17,8 @@ export interface ModalProps {
 const SIZE_CLASS: Record<ModalSize, string> = {
   md: "max-w-[480px]",
   lg: "max-w-[640px]",
-  xl: "max-w-[880px]"
+  xl: "max-w-[880px]",
+  "2xl":"max-w-[1100px]"
 };
 
 export default function Modal({
