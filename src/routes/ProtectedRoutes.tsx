@@ -1,20 +1,30 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useCurrentUser } from "../hooks/useCurrentUser";
+import { useAuth } from "../contexts/AuthContext";
 
-const ProtectedRoutes: React.FC = () => {
+interface ProtectedRoutesProps {
+  allowedRoles?: string[];
+}
+
+const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({
+  allowedRoles,
+}) => {
   const {
-    data: user,
-    isLoading,
-    isError,
-  } = useCurrentUser();
+    isAuthenticated,
+    role,
+    authReady,
+  } = useAuth();
 
-  if (isLoading) {
+  if (!authReady) {
     return <div>Loading...</div>;
   }
 
-  if (isError || !user) {
+  if (!isAuthenticated) {
     return <Navigate to="/" replace />;
+  }
+
+  if (allowedRoles && (!role || !allowedRoles.includes(role))) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return <Outlet />;

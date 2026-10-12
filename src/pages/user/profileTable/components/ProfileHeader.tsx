@@ -8,7 +8,7 @@ interface ProfileHeaderProps {
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   isFetching,
-  onRefresh,
+  onRefresh
 }) => (
   <div className="flex shrink-0 items-center justify-between gap-4">
     <div>
@@ -28,14 +28,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         disabled={isFetching}
         className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
       >
-        <RefreshCw
-          size={15}
-          className={isFetching ? "animate-spin" : ""}
-        />
+        <RefreshCw size={15} className={isFetching ? "animate-spin" : ""} />
         Làm mới
       </button>
-
-     
     </div>
   </div>
 );
