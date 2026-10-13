@@ -59,7 +59,6 @@ export default function ProjectPage() {
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("asc");
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(DEFAULT_PAGE_SIZE);
-  const [thumbnailUrl, setThumbnailUrl] = React.useState<File | null>(null);
   const projects = React.useMemo<ProjectProps[]>(() => {
     if (data === undefined || !Array.isArray(data.data)) {
       return [];
@@ -110,16 +109,13 @@ export default function ProjectPage() {
     setCreateError("");
   };
 
-  const handleCloseCreate = () => {
-    setIsCreateOpen(false);
-    resetCreateForm();
-  };
+
 
   const handleCreateProject = async () => {
     try {
       setCreateError("");
 
-      if (thumbnailUrl === null) {
+      if (createThumbnailUrl === null) {
         setCreateError("Vui lòng chọn ảnh thumbnail.");
         return;
       }
@@ -140,6 +136,7 @@ export default function ProjectPage() {
         severity: "success"
       });
       setIsCreateOpen(false);
+      resetCreateForm();
 
       setCreateTitle("");
       setCreateDescription("");
@@ -148,12 +145,16 @@ export default function ProjectPage() {
       setCreateFeatured(false);
       setCreateDemoUrl("");
       setCreateGithubUrl("");
-      setThumbnailUrl(null);
       setCreateError("");
     } catch (error) {
       setCreateError(error instanceof Error ? error.message : String(error));
     }
   };
+  const handleCloseProjectModal = () => {
+  setIsCreateOpen(false);
+  setEditingProject(null);
+  resetCreateForm();
+};
   const handleUpdateProject = async () => {
     if (editingProject === null) {
       return;
@@ -345,132 +346,96 @@ export default function ProjectPage() {
         </section>
       </div>
 
-      <Modal
-        open={isCreateOpen}
-        onClose={handleCloseCreate}
-        title="Tạo dự án mới"
-        size="xl"
-        footer={
-          <>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleCloseCreate}
-              disabled={createProjectMutation.isPending}
-            >
-              Hủy
-            </Button>
-
-            <Button
-              type="button"
-              onClick={handleCreateProject}
-              isLoading={createProjectMutation.isPending}
-            >
-              <Plus size={16} />
-              Tạo dự án
-            </Button>
-          </>
+    <Modal
+  open={isCreateOpen || editingProject !== null}
+  onClose={handleCloseProjectModal}
+  title={editingProject === null ? "Tạo dự án mới" : "Cập nhật dự án"}
+  size="xl"
+  footer={
+    <>
+      <Button
+        type="button"
+        variant="secondary"
+        onClick={handleCloseProjectModal}
+        disabled={
+          createProjectMutation.isPending ||
+          updateProjectMutation.isPending
         }
       >
-        <div className="space-y-4">
-          {createError.length > 0 && (
-            <div
-              role="alert"
-              className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400"
-            >
-              {createError}
-            </div>
-          )}
+        Hủy
+      </Button>
 
-          <FormCreateProjectFile
-            category={createCategory}
-            setCategory={setCreateCategory}
-            title={createTitle}
-            setTitle={setCreateTitle}
-            description={createDescription}
-            setDescription={setCreateDescription}
-            displayOrder={createDisplayOrder}
-            setDisplayOrder={setCreateDisplayOrder}
-            featured={createFeatured}
-            setFeatured={setCreateFeatured}
-            demoUrl={createDemoUrl}
-            setDemoUrl={setCreateDemoUrl}
-            githubUrl={createGithubUrl}
-            setGithubUrl={setCreateGithubUrl}
-            thumbnailUrl={createThumbnailUrl}
-            setThumbnailUrl={setCreateThumbnailUrl}
-            onSubmit={handleCreateProject}
-          />
-        </div>
-      </Modal>
-      <Modal
-        open={isCreateOpen || editingProject !== null}
-        onClose={handleCloseCreate}
-        title={editingProject === null ? "Tạo dự án mới" : "Cập nhật dự án"}
-        size="xl"
-        footer={
-          <>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleCloseCreate}
-              disabled={
-                createProjectMutation.isPending ||
-                updateProjectMutation.isPending
-              }
-            >
-              Hủy
-            </Button>
-
-            <Button
-              type="button"
-              onClick={
-                editingProject === null
-                  ? handleCreateProject
-                  : handleUpdateProject
-              }
-              isLoading={
-                createProjectMutation.isPending ||
-                updateProjectMutation.isPending
-              }
-            >
-              <Plus size={16} />
-              {editingProject === null ? "Tạo dự án" : "Lưu thay đổi"}
-            </Button>
-          </>
+      <Button
+        type="button"
+        onClick={
+          editingProject === null
+            ? handleCreateProject
+            : handleUpdateProject
+        }
+        isLoading={
+          createProjectMutation.isPending ||
+          updateProjectMutation.isPending
         }
       >
-        <div className="space-y-4">
-          {createError.length > 0 && (
-            <div
-              role="alert"
-              className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400"
-            >
-              {createError}
-            </div>
-          )}
+        <Plus size={16} />
+        {editingProject === null ? "Tạo dự án" : "Lưu thay đổi"}
+      </Button>
+    </>
+  }
+>
+  <div className="space-y-4">
+    {createError.length > 0 && (
+      <div
+        role="alert"
+        className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400"
+      >
+        {createError}
+      </div>
+    )}
 
-          <FormUpdateProjectFile
-            category={createCategory}
-            setCategory={setCreateCategory}
-            title={createTitle}
-            setTitle={setCreateTitle}
-            description={createDescription}
-            setDescription={setCreateDescription}
-            displayOrder={createDisplayOrder}
-            setDisplayOrder={setCreateDisplayOrder}
-            featured={createFeatured}
-            setFeatured={setCreateFeatured}
-            demoUrl={createDemoUrl}
-            setDemoUrl={setCreateDemoUrl}
-            githubUrl={createGithubUrl}
-            setGithubUrl={setCreateGithubUrl}
-            thumbnailUrl={createThumbnailUrl}
-            setThumbnailUrl={setCreateThumbnailUrl}
-            onSubmit={handleCreateProject}
-          />
-        </div>
-      </Modal>
+    {editingProject === null ? (
+      <FormCreateProjectFile
+        category={createCategory}
+        setCategory={setCreateCategory}
+        title={createTitle}
+        setTitle={setCreateTitle}
+        description={createDescription}
+        setDescription={setCreateDescription}
+        displayOrder={createDisplayOrder}
+        setDisplayOrder={setCreateDisplayOrder}
+        featured={createFeatured}
+        setFeatured={setCreateFeatured}
+        demoUrl={createDemoUrl}
+        setDemoUrl={setCreateDemoUrl}
+        githubUrl={createGithubUrl}
+        setGithubUrl={setCreateGithubUrl}
+        thumbnailUrl={createThumbnailUrl}
+        setThumbnailUrl={setCreateThumbnailUrl}
+        onSubmit={handleCreateProject}
+      />
+    ) : (
+      <FormUpdateProjectFile
+        category={createCategory}
+        setCategory={setCreateCategory}
+        title={createTitle}
+        setTitle={setCreateTitle}
+        description={createDescription}
+        setDescription={setCreateDescription}
+        displayOrder={createDisplayOrder}
+        setDisplayOrder={setCreateDisplayOrder}
+        featured={createFeatured}
+        setFeatured={setCreateFeatured}
+        demoUrl={createDemoUrl}
+        setDemoUrl={setCreateDemoUrl}
+        githubUrl={createGithubUrl}
+        setGithubUrl={setCreateGithubUrl}
+        thumbnailUrl={createThumbnailUrl}
+        setThumbnailUrl={setCreateThumbnailUrl}
+        onSubmit={handleUpdateProject}
+      />
+    )}
+  </div>
+</Modal>
       <Snackbar
         open={notification.open}
         autoHideDuration={3000}

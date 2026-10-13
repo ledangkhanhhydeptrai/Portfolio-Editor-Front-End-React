@@ -1,3 +1,4 @@
+import ExperienceIdPage from "../pages/user/experience/ExperienceIdPage";
 import ExperiencePage from "../pages/user/experience/ExperiencePage";
 import ProfilePage from "../pages/user/profile/ProfilePage";
 import ProfileTablePage from "../pages/user/profileTable/ProfilePage";
@@ -64,5 +65,9 @@ export const privateRoutes = [
   {
     path: "/experiences",
     element: <ExperiencePage />
+  },
+  {
+    path: "/experiences/:id",
+    element: <ExperienceIdPage />
   }
 ];
