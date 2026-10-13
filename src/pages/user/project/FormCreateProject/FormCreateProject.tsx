@@ -17,10 +17,12 @@ import type { FormCreateProject } from "../../../../services/project/ProjectType
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_THUMBNAIL_MB = 5;
+const MAX_THUMBNAIL_SIZE = MAX_THUMBNAIL_MB * 1024 * 1024;
 
 const CATEGORY_OPTIONS = [
   { value: "DEVELOPMENT", label: "Development" },
-  { value: "VIDEO_EDITING", label: "Video Editing" }
+  { value: "VIDEO_EDITING", label: "Video Editing" },
+  { value: "DRIVING", label: "Driving" }
 ];
 
 const card = "rounded-2xl border border-line bg-surface p-4 sm:p-5";
@@ -59,22 +61,24 @@ export default function FormCreateProjectFile({
   title
 }: FormCreateProject) {
   const thumbnailInputId = React.useId();
+  const thumbnailInputRef = React.useRef<HTMLInputElement>(null);
 
   const [thumbnailError, setThumbnailError] = React.useState("");
   const [isDragging, setIsDragging] = React.useState(false);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
 
-  // Tạo và giải phóng object URL đúng cách để hiện ảnh xem trước
   React.useEffect(() => {
     if (!(thumbnailUrl instanceof File)) {
       setPreviewUrl(null);
       return;
     }
 
-    const url = URL.createObjectURL(thumbnailUrl);
-    setPreviewUrl(url);
+    const objectUrl = URL.createObjectURL(thumbnailUrl);
+    setPreviewUrl(objectUrl);
 
-    return () => URL.revokeObjectURL(url);
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
   }, [thumbnailUrl]);
 
   const acceptThumbnail = (selectedFile: File): boolean => {
@@ -83,29 +87,32 @@ export default function FormCreateProjectFile({
       return false;
     }
 
-    if (selectedFile.size > MAX_THUMBNAIL_MB * 1024 * 1024) {
+    if (selectedFile.size > MAX_THUMBNAIL_SIZE) {
       setThumbnailError("Kích thước ảnh không được vượt quá 5 MB.");
       return false;
     }
 
     setThumbnailError("");
     setThumbnailUrl(selectedFile);
+
     return true;
   };
 
   const handleThumbnailChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const files = event.target.files;
+    const input = event.currentTarget;
+    const files = input.files;
 
     if (files === null || files.length === 0) {
       return;
     }
 
-    const accepted = acceptThumbnail(files[0]);
+    const selectedFile = files[0];
+    const accepted = acceptThumbnail(selectedFile);
 
     if (!accepted) {
-      event.target.value = "";
+      input.value = "";
     }
   };
 
@@ -113,21 +120,27 @@ export default function FormCreateProjectFile({
     event.preventDefault();
     setIsDragging(false);
 
-    const dropped = event.dataTransfer.files;
+    const files = event.dataTransfer.files;
 
-    if (dropped.length > 0) {
-      acceptThumbnail(dropped[0]);
+    if (files.length === 0) {
+      return;
     }
+
+    acceptThumbnail(files[0]);
   };
 
   const handleRemoveThumbnail = () => {
     setThumbnailUrl(null);
     setThumbnailError("");
+
+    if (thumbnailInputRef.current !== null) {
+      thumbnailInputRef.current.value = "";
+    }
   };
 
   return (
     <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2">
-      {/* ===== Trái: thông tin dự án ===== */}
+      {/* Thông tin dự án */}
       <section className={`${card} lg:h-full`}>
         <SectionHeader
           title="Thông tin dự án"
@@ -172,7 +185,7 @@ export default function FormCreateProjectFile({
           />
         </div>
 
-        {/* Featured: công tắc bật/tắt */}
+        {/* Dự án nổi bật */}
         <label className="mt-4 flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-line px-4 py-3 transition hover:border-accent/40">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-accent/10 p-2 text-accent">
@@ -180,7 +193,9 @@ export default function FormCreateProjectFile({
             </div>
 
             <div>
-              <p className="text-sm font-semibold text-ink">Dự án nổi bật</p>
+              <p className="text-sm font-semibold text-ink">
+                Dự án nổi bật
+              </p>
               <p className="text-xs text-muted">
                 Ưu tiên hiển thị dự án trong portfolio.
               </p>
@@ -195,13 +210,15 @@ export default function FormCreateProjectFile({
               onChange={(event) => setFeatured(event.target.checked)}
               className="peer sr-only"
             />
+
             <span className="absolute inset-0 rounded-full border border-line bg-surface2 transition peer-checked:border-accent peer-checked:bg-accent peer-focus-visible:ring-2 peer-focus-visible:ring-accent peer-focus-visible:ring-offset-2" />
+
             <span className="absolute left-0.5 top-0.5 size-5 rounded-full bg-white shadow transition peer-checked:translate-x-5" />
           </span>
         </label>
       </section>
 
-      {/* ===== Phải: liên kết + thumbnail ===== */}
+      {/* Liên kết và thumbnail */}
       <div className="flex flex-col gap-4">
         <section className={card}>
           <SectionHeader
@@ -230,6 +247,7 @@ export default function FormCreateProjectFile({
           </div>
         </section>
 
+        {/* Thumbnail */}
         <section className={`${card} flex flex-1 flex-col`}>
           <SectionHeader
             title="Thumbnail dự án"
@@ -237,9 +255,10 @@ export default function FormCreateProjectFile({
           />
 
           <input
+            ref={thumbnailInputRef}
             id={thumbnailInputId}
             type="file"
-            accept="image/jpeg,image/png,image/webp"
+            accept={ALLOWED_TYPES.join(",")}
             onChange={handleThumbnailChange}
             className="sr-only"
           />
@@ -262,6 +281,7 @@ export default function FormCreateProjectFile({
                 <p className="truncate text-sm font-semibold text-ink">
                   {thumbnailUrl.name}
                 </p>
+
                 <p className="mt-1 text-xs text-muted">
                   {(thumbnailUrl.size / 1024).toFixed(1)} KB
                 </p>
@@ -305,7 +325,10 @@ export default function FormCreateProjectFile({
                     ? "Thả ảnh vào đây"
                     : "Nhấn để chọn hoặc kéo thả thumbnail"}
                 </p>
-                <p className="mt-1 text-xs text-muted">JPG, PNG hoặc WEBP</p>
+
+                <p className="mt-1 text-xs text-muted">
+                  JPG, PNG hoặc WEBP · Tối đa 5 MB
+                </p>
               </div>
             </label>
           )}
