@@ -27,3 +27,20 @@ export interface FormCreateSkillProps {
   setIconUrl: (value: File | null) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
+export interface FormUpdateSkillProps {
+  skill: SkillProps;
+  isLoading: boolean;
+  category: SkillEnum;
+  onCancel: () => void;
+  setCategory: (value: SkillEnum) => void;
+
+  displayOrder: number;
+  setDisplayOrder: (value: number) => void;
+
+  name: string;
+  setName: (value: string) => void;
+
+  iconUrl: File | null;
+  setIconUrl: (value: File | null) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+}

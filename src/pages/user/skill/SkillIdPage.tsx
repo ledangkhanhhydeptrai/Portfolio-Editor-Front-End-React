@@ -66,14 +66,14 @@ interface InfoRowProps {
 
 function InfoRow({ icon: Icon, label, children, action }: InfoRowProps) {
   return (
-    <div className="flex items-start gap-4 px-6 py-5">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-[#AAB9FF]">
-        <Icon size={17} />
+    <div className="flex items-center gap-3 px-5 py-3.5">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-[#AAB9FF]">
+        <Icon size={16} />
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-sm text-white/45">{label}</p>
-        <div className="mt-1 break-all text-[15px] font-medium text-white/90">
+        <p className="text-xs text-white/45">{label}</p>
+        <div className="mt-0.5 truncate text-[15px] font-medium text-white/90">
           {children}
         </div>
       </div>
@@ -94,6 +94,7 @@ function CopyButton({ copied, onClick, title }: CopyButtonProps) {
     <button
       type="button"
       title={title}
+      aria-label={title}
       onClick={onClick}
       className={`flex size-9 shrink-0 items-center justify-center rounded-lg border transition ${
         copied
@@ -123,7 +124,7 @@ export default function SkillIdPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-[#0B0B0D]">
+      <div className="flex min-h-[50vh] items-center justify-center bg-[#0B0B0D]">
         <div className="flex flex-col items-center gap-3">
           <LoaderCircle className="size-8 animate-spin text-[#7F96F5]" />
           <p className="text-sm text-white/45">Đang tải thông tin kỹ năng...</p>
@@ -134,7 +135,7 @@ export default function SkillIdPage() {
 
   if (isError || !data || !data.data) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 bg-[#0B0B0D] px-4 text-center">
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 bg-[#0B0B0D] px-4 text-center">
         <div className="rounded-full border border-red-500/20 bg-red-500/10 p-4">
           <AlertCircle className="size-8 text-red-400" />
         </div>
@@ -162,10 +163,12 @@ export default function SkillIdPage() {
   const editPath = `${LIST_PATH}/${id}/edit`;
 
   return (
-    <div className="min-h-screen bg-[#0B0B0D] px-4 py-6 text-[#F0EFEA] sm:px-6 lg:px-8">
-      <div className="space-y-6">
+    // min-h-full thay cho min-h-screen: layout bên ngoài đã có header,
+    // min-h-screen (100vh) làm trang luôn cao hơn khung nhìn nên bị cắt ở đáy.
+    <div className="min-h-full bg-[#0B0B0D] px-4 py-5 text-[#F0EFEA]">
+      <div className="space-y-5">
         {/* Breadcrumb + action */}
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <nav
             aria-label="Breadcrumb"
             className="flex items-center gap-2 text-sm text-white/45"
@@ -192,141 +195,151 @@ export default function SkillIdPage() {
           </Link>
         </div>
 
-        {/* Hero */}
-        <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-[#121216]">
-          <div
-            aria-hidden="true"
-            className={`pointer-events-none absolute -right-24 -top-24 size-72 rounded-full blur-3xl ${meta.glow}`}
-          />
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          {/* ===== Cột trái: hero + thông tin chi tiết ===== */}
+          <div className="space-y-5 lg:col-span-2">
+            {/* Hero */}
+            <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-[#121216]">
+              <div
+                aria-hidden="true"
+                className={`pointer-events-none absolute -right-24 -top-24 size-72 rounded-full blur-3xl ${meta.glow}`}
+              />
 
-          <div className="relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:p-8">
-            <div className="flex size-28 shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-lg shadow-black/30">
-              {skill.iconUrl ? (
-                <img
-                  src={skill.iconUrl}
-                  alt={skill.name}
-                  className="size-full object-contain p-4"
-                />
-              ) : (
-                <CategoryIcon size={44} className="text-[#AAB9FF]" />
-              )}
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <span
-                className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium ${meta.badge}`}
-              >
-                <CategoryIcon size={13} />
-                {meta.label}
-              </span>
-
-              <h1 className="mt-3 break-words text-3xl font-bold tracking-tight sm:text-4xl">
-                {skill.name}
-              </h1>
-
-              <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-white/45">
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.05] px-2.5 py-1.5">
-                  <Hash size={13} />
-                  Thứ tự hiển thị: {skill.displayOrder}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleCopy("id", String(skill.id))}
-                  title="Sao chép ID"
-                  className="inline-flex max-w-full items-center gap-1.5 rounded-lg bg-white/[0.05] px-2.5 py-1.5 transition hover:bg-white/[0.09] hover:text-white/70"
-                >
-                  <Fingerprint size={13} className="shrink-0" />
-                  <span className="max-w-[220px] truncate">{skill.id}</span>
-                  {copiedKey === "id" ? (
-                    <Check size={13} className="shrink-0 text-emerald-400" />
+              <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center">
+                <div className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] shadow-lg shadow-black/30">
+                  {skill.iconUrl ? (
+                    <img
+                      src={skill.iconUrl}
+                      alt={skill.name}
+                      className="size-full object-contain p-3.5"
+                    />
                   ) : (
-                    <Copy size={13} className="shrink-0" />
+                    <CategoryIcon size={38} className="text-[#AAB9FF]" />
                   )}
-                </button>
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium ${meta.badge}`}
+                  >
+                    <CategoryIcon size={13} />
+                    {meta.label}
+                  </span>
+
+                  <h1 className="mt-2 break-words text-3xl font-bold tracking-tight">
+                    {skill.name}
+                  </h1>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-white/45">
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.05] px-2.5 py-1.5">
+                      <Hash size={13} />
+                      Thứ tự hiển thị: {skill.displayOrder}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("id", String(skill.id))}
+                      title="Sao chép ID"
+                      className="inline-flex max-w-full items-center gap-1.5 rounded-lg bg-white/[0.05] px-2.5 py-1.5 transition hover:bg-white/[0.09] hover:text-white/70"
+                    >
+                      <Fingerprint size={13} className="shrink-0" />
+                      <span className="max-w-[220px] truncate">{skill.id}</span>
+                      {copiedKey === "id" ? (
+                        <Check size={13} className="shrink-0 text-emerald-400" />
+                      ) : (
+                        <Copy size={13} className="shrink-0" />
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
+            </section>
+
+            {/* Thông tin chi tiết */}
+            <section className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#121216]">
+              <div className="border-b border-white/[0.08] px-5 py-3.5">
+                <h2 className="text-base font-semibold">Thông tin chi tiết</h2>
+                <p className="mt-0.5 text-sm text-white/40">
+                  Dữ liệu của kỹ năng đang hiển thị trên portfolio.
+                </p>
+              </div>
+
+              {/* Tên / Danh mục / Thứ tự nằm chung một hàng để tiết kiệm chiều cao */}
+              <div className="grid grid-cols-1 divide-y divide-white/[0.06] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+                <InfoRow icon={Code2} label="Tên kỹ năng">
+                  {skill.name}
+                </InfoRow>
+
+                <InfoRow icon={Layers} label="Danh mục">
+                  {meta.label}
+                  <span className="ml-2 text-xs font-normal text-white/30">
+                    {skill.category}
+                  </span>
+                </InfoRow>
+
+                <InfoRow icon={Hash} label="Thứ tự hiển thị">
+                  {skill.displayOrder}
+                </InfoRow>
+              </div>
+
+              <div className="border-t border-white/[0.06]">
+                <InfoRow
+                  icon={ImageIcon}
+                  label="Icon URL"
+                  action={
+                    skill.iconUrl ? (
+                      <div className="flex shrink-0 gap-2">
+                        <CopyButton
+                          title="Sao chép URL"
+                          copied={copiedKey === "icon"}
+                          onClick={() => handleCopy("icon", skill.iconUrl)}
+                        />
+                        <a
+                          href={skill.iconUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          title="Mở ảnh ở tab mới"
+                          aria-label="Mở ảnh ở tab mới"
+                          className="flex size-9 items-center justify-center rounded-lg border border-white/[0.08] text-white/50 transition hover:border-[#7F96F5]/30 hover:bg-[#7F96F5]/10 hover:text-[#AAB9FF]"
+                        >
+                          <ExternalLink size={15} />
+                        </a>
+                      </div>
+                    ) : undefined
+                  }
+                >
+                  {skill.iconUrl ? (
+                    <span
+                      title={skill.iconUrl}
+                      className="text-sm font-normal text-white/70"
+                    >
+                      {skill.iconUrl}
+                    </span>
+                  ) : (
+                    <span className="text-sm font-normal text-white/35">
+                      Chưa có icon
+                    </span>
+                  )}
+                </InfoRow>
+              </div>
+            </section>
           </div>
-        </section>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Thông tin chi tiết */}
-          <section className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#121216] lg:col-span-2">
-            <div className="border-b border-white/[0.08] px-6 py-5">
-              <h2 className="text-lg font-semibold">Thông tin chi tiết</h2>
-              <p className="mt-1 text-sm text-white/40">
-                Dữ liệu của kỹ năng đang hiển thị trên portfolio.
-              </p>
-            </div>
-
-            <div className="divide-y divide-white/[0.06]">
-              <InfoRow icon={Code2} label="Tên kỹ năng">
-                {skill.name}
-              </InfoRow>
-
-              <InfoRow icon={Layers} label="Danh mục">
-                {meta.label}
-                <span className="ml-2 text-xs font-normal text-white/30">
-                  {skill.category}
-                </span>
-              </InfoRow>
-
-              <InfoRow icon={Hash} label="Thứ tự hiển thị">
-                {skill.displayOrder}
-              </InfoRow>
-
-              <InfoRow
-                icon={ImageIcon}
-                label="Icon URL"
-                action={
-                  skill.iconUrl ? (
-                    <div className="flex shrink-0 gap-2">
-                      <CopyButton
-                        title="Sao chép URL"
-                        copied={copiedKey === "icon"}
-                        onClick={() => handleCopy("icon", skill.iconUrl)}
-                      />
-                      <a
-                        href={skill.iconUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        title="Mở ảnh ở tab mới"
-                        className="flex size-9 items-center justify-center rounded-lg border border-white/[0.08] text-white/50 transition hover:border-[#7F96F5]/30 hover:bg-[#7F96F5]/10 hover:text-[#AAB9FF]"
-                      >
-                        <ExternalLink size={15} />
-                      </a>
-                    </div>
-                  ) : undefined
-                }
-              >
-                {skill.iconUrl ? (
-                  <span className="text-sm font-normal text-white/70">
-                    {skill.iconUrl}
-                  </span>
-                ) : (
-                  <span className="text-sm font-normal text-white/35">
-                    Chưa có icon
-                  </span>
-                )}
-              </InfoRow>
-            </div>
-          </section>
-
-          {/* Cột phải */}
-          <div className="space-y-6">
-            <section className="rounded-2xl border border-white/[0.08] bg-[#121216] p-6">
-              <h2 className="text-lg font-semibold">Xem trước icon</h2>
-              <p className="mt-1 text-sm text-white/40">
+          {/* ===== Cột phải ===== */}
+          <div className="space-y-5">
+            <section className="rounded-2xl border border-white/[0.08] bg-[#121216] p-5">
+              <h2 className="text-base font-semibold">Xem trước icon</h2>
+              <p className="mt-0.5 text-sm text-white/40">
                 Icon trên nền tối và nền sáng.
               </p>
 
-              <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="mt-4 grid grid-cols-2 gap-3">
                 {[
                   { key: "dark", bg: "bg-[#0B0B0D] border-white/10" },
                   { key: "light", bg: "bg-white border-white" }
                 ].map((tile) => (
                   <div
                     key={tile.key}
-                    className={`flex h-28 items-end justify-center gap-3 rounded-xl border pb-4 ${tile.bg}`}
+                    className={`flex h-24 items-end justify-center gap-3 rounded-xl border pb-4 ${tile.bg}`}
                   >
                     {skill.iconUrl ? (
                       [40, 28, 18].map((size) => (
@@ -353,13 +366,13 @@ export default function SkillIdPage() {
               </div>
             </section>
 
-            <section className="rounded-2xl border border-white/[0.08] bg-[#121216] p-6">
-              <h2 className="text-lg font-semibold">Thao tác nhanh</h2>
+            <section className="rounded-2xl border border-white/[0.08] bg-[#121216] p-5">
+              <h2 className="text-base font-semibold">Thao tác nhanh</h2>
 
-              <div className="mt-4 space-y-3">
+              <div className="mt-3 space-y-2.5">
                 <Link
                   to={editPath}
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-white/10 text-sm font-medium text-white/80 transition hover:border-[#7F96F5]/30 hover:bg-[#7F96F5]/10 hover:text-[#AAB9FF]"
+                  className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/10 text-sm font-medium text-white/80 transition hover:border-[#7F96F5]/30 hover:bg-[#7F96F5]/10 hover:text-[#AAB9FF]"
                 >
                   <Pencil size={15} />
                   Cập nhật kỹ năng
@@ -367,7 +380,7 @@ export default function SkillIdPage() {
 
                 <Link
                   to={LIST_PATH}
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-white/10 text-sm font-medium text-white/80 transition hover:bg-white/[0.05]"
+                  className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/10 text-sm font-medium text-white/80 transition hover:bg-white/[0.05]"
                 >
                   <ArrowLeft size={15} />
                   Danh sách kỹ năng
