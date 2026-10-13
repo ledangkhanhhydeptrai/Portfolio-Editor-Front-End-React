@@ -1,5 +1,7 @@
 import ProfilePage from "../pages/user/profile/ProfilePage";
 import ProfileTablePage from "../pages/user/profileTable/ProfilePage";
+import ProjectIdPage from "../pages/user/project/ProjectIdPage";
+import ProjectPage from "../pages/user/project/ProjectPage";
 import SkillIdPage from "../pages/user/skill/SkillIdPage";
 import SkillPage from "../pages/user/skill/SkillPage";
 import SocialLinkById from "../pages/user/social-link/SocialLinkById";
@@ -49,5 +51,13 @@ export const privateRoutes = [
   {
     path: "/skills/:id",
     element: <SkillIdPage />
+  },
+  {
+    path: "/projects",
+    element: <ProjectPage />
+  },
+  {
+    path: "/projects/:id",
+    element: <ProjectIdPage />
   }
 ];
