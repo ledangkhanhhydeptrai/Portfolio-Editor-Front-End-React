@@ -1,9 +1,6 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-} from "react";
+import React, { createContext, useContext, useState } from "react";
 import type { LoginResponse } from "../services/auth/authTypes";
+import { AUTH_UNAUTHORIZED_EVENT } from "../services/auth/authEvents";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -14,6 +11,7 @@ interface AuthContextType {
   setRole: React.Dispatch<React.SetStateAction<string | null>>;
   authReady: boolean;
   setAuthReady: React.Dispatch<React.SetStateAction<boolean>>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -44,27 +42,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   );
   const [authReady, setAuthReady] = useState(true);
 
-  const updateUser = (
-    nextUser: React.SetStateAction<LoginResponse | null>
-  ) => {
+  const updateUser = (nextUser: React.SetStateAction<LoginResponse | null>) => {
     setUser((currentUser) => {
       const resolvedUser =
-        typeof nextUser === "function"
-          ? nextUser(currentUser)
-          : nextUser;
+        typeof nextUser === "function" ? nextUser(currentUser) : nextUser;
 
       if (resolvedUser === null) {
         sessionStorage.removeItem("auth_user");
       } else {
-        sessionStorage.setItem(
-          "auth_user",
-          JSON.stringify(resolvedUser)
-        );
+        sessionStorage.setItem("auth_user", JSON.stringify(resolvedUser));
       }
 
       return resolvedUser;
     });
   };
+
+  const logout = React.useCallback(() => {
+    setUser(null);
+    sessionStorage.removeItem("auth_user");
+    setIsAuthenticated(false);
+    setRole(null);
+  }, []);
+
+  React.useEffect(() => {
+    const handleUnauthorized = () => {
+      logout();
+    };
+
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+
+    return () => {
+      window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+    };
+  }, [logout]);
 
   return (
     <AuthContext.Provider
@@ -77,6 +87,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setRole,
         authReady,
         setAuthReady,
+        logout
       }}
     >
       {children}

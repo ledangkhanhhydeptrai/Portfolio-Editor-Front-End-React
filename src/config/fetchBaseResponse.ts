@@ -1,11 +1,12 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { API_CONFIG } from "./api";
+import { notifyUnauthorized } from "../services/auth/authEvents";
 
 const API = axios.create({
   baseURL: API_CONFIG.BASE_URL,
   timeout: 15000,
-  withCredentials: true,
+  withCredentials: true
 });
 
 export interface BaseResponse<T> {
@@ -18,7 +19,7 @@ export interface BaseResponse<T> {
 
 export async function fetchBaseResponse<T = unknown>(
   url: string,
-  config: AxiosRequestConfig,
+  config: AxiosRequestConfig
 ): Promise<BaseResponse<T>> {
   try {
     const response: AxiosResponse = await API(url, config);
@@ -31,29 +32,20 @@ export async function fetchBaseResponse<T = unknown>(
         message: "Success",
         data: raw as T,
         serverStatus: response.status,
-        success: true,
+        success: true
       };
     }
 
     if (raw !== null && typeof raw === "object") {
       return {
-        status:
-          typeof raw.status === "number"
-            ? raw.status
-            : response.status,
+        status: typeof raw.status === "number" ? raw.status : response.status,
 
-        message:
-          typeof raw.message === "string"
-            ? raw.message
-            : "Success",
+        message: typeof raw.message === "string" ? raw.message : "Success",
 
-        data:
-          typeof raw.data !== "undefined"
-            ? (raw.data as T)
-            : (raw as T),
+        data: typeof raw.data !== "undefined" ? (raw.data as T) : (raw as T),
 
         serverStatus: response.status,
-        success: true,
+        success: true
       };
     }
 
@@ -62,34 +54,31 @@ export async function fetchBaseResponse<T = unknown>(
       message: "Success",
       data: raw as T,
       serverStatus: response.status,
-      success: true,
+      success: true
     };
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       const response = error.response;
 
       if (response) {
+        if (response.status === 401) {
+          notifyUnauthorized();
+        }
         const raw = response.data;
 
         if (raw !== null && typeof raw === "object") {
           return {
             status:
-              typeof raw.status === "number"
-                ? raw.status
-                : response.status,
+              typeof raw.status === "number" ? raw.status : response.status,
 
             message:
-              typeof raw.message === "string"
-                ? raw.message
-                : "Request failed",
+              typeof raw.message === "string" ? raw.message : "Request failed",
 
             data:
-              typeof raw.data !== "undefined"
-                ? (raw.data as T)
-                : (null as T),
+              typeof raw.data !== "undefined" ? (raw.data as T) : (null as T),
 
             serverStatus: response.status,
-            success: false,
+            success: false
           };
         }
 
@@ -98,7 +87,7 @@ export async function fetchBaseResponse<T = unknown>(
           message: "Request failed",
           data: null as T,
           serverStatus: response.status,
-          success: false,
+          success: false
         };
       }
 
@@ -108,7 +97,7 @@ export async function fetchBaseResponse<T = unknown>(
           message: "Không thể kết nối đến server",
           data: null as T,
           serverStatus: 503,
-          success: false,
+          success: false
         };
       }
 
@@ -117,7 +106,7 @@ export async function fetchBaseResponse<T = unknown>(
         message: error.message || "Request failed",
         data: null as T,
         serverStatus: 500,
-        success: false,
+        success: false
       };
     }
 
