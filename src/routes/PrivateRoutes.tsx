@@ -1,3 +1,7 @@
+import DirectionIdPage from "../pages/user/direction/DirectionIdPage";
+import DirectionPage from "../pages/user/direction/DirectionPage";
+import EducationIdPage from "../pages/user/education/EducationIdPage";
+import EducationPage from "../pages/user/education/EducationPage";
 import ExperienceIdPage from "../pages/user/experience/ExperienceIdPage";
 import ExperiencePage from "../pages/user/experience/ExperiencePage";
 import ProfilePage from "../pages/user/profile/ProfilePage";
@@ -69,5 +73,21 @@ export const privateRoutes = [
   {
     path: "/experiences/:id",
     element: <ExperienceIdPage />
+  },
+  {
+    path: "/educations",
+    element: <EducationPage />
+  },
+  {
+    path: "/educations/:id",
+    element: <EducationIdPage />
+  },
+  {
+    path: "/directions",
+    element: <DirectionPage />
+  },
+  {
+    path: "/directions/:id",
+    element: <DirectionIdPage />
   }
 ];
