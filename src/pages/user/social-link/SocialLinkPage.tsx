@@ -25,6 +25,7 @@ import { SocialLinkPagination } from "./components/SocialLinkPagination";
 import { SocialLinkNotification } from "./components/SocialLinkNotification";
 import { SocialLinkListSkeleton } from "./components/SocialLinklistskeleton";
 import { SocialLinkErrorState } from "./components/SocialLinkerrorstate";
+import { useNavigate } from "react-router-dom";
 
 type DialogState =
   | { type: "create" }
@@ -63,7 +64,11 @@ export default function SocialLinkPage() {
   const { mutateAsync, isPending } = useCreateSocialLink();
   const updateMutation = useUpdateSocialLink(editingItem ? editingItem.id : "");
   const deleteMutation = useDeleteSocialLink();
+  const navigate = useNavigate();
 
+  const openView = (item: SocialLinkProps) => {
+    navigate(`/social-links/${item.id}`);
+  };
   const resetForm = React.useCallback(() => {
     setPlatform("");
     setUrl("");
@@ -230,7 +235,6 @@ export default function SocialLinkPage() {
     }
   };
 
-  const openView = (item: SocialLinkProps) => setDialog({ type: "view", item });
   const openDelete = (item: SocialLinkProps) =>
     setDialog({ type: "delete", item });
 

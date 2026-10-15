@@ -11,14 +11,16 @@ import {
   X
 } from "lucide-react";
 
+import { Alert, Snackbar } from "@mui/material";
+
 import { VideoEnum } from "../../../../../services/video/VideoTypes";
 import { CreateVideoProps } from "../../../../../hooks/useVideo";
 import Input from "../../../../../components/ui/Input";
 import Textarea from "../../../../../components/ui/Textarea";
 import Select, { SelectOption } from "../../../../../components/ui/Select";
 import { Notifications } from "../../../../../components/ui/Notification";
-import { Alert, Snackbar } from "@mui/material";
 import { formatCategory } from "../../../../../utils/formatDate";
+import formatValidate from "../../../../../utils/formatValidate";
 
 interface VideoCreateModalProps {
   open: boolean;
@@ -64,6 +66,7 @@ const Section: React.FC<SectionProps> = ({
       >
         {title}
       </h3>
+
       {description && (
         <p
           className={`mt-0.5 text-xs ${
@@ -74,6 +77,7 @@ const Section: React.FC<SectionProps> = ({
         </p>
       )}
     </header>
+
     <div className="space-y-3">{children}</div>
   </section>
 );
@@ -91,6 +95,8 @@ interface FileDropzoneProps {
   isDark: boolean;
   onSelect: (file: File) => void;
   onClear: () => void;
+  error: string;
+  onFileError: (message: string) => void;
 }
 
 const FileDropzone: React.FC<FileDropzoneProps> = ({
@@ -105,7 +111,9 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
   disabled,
   isDark,
   onSelect,
-  onClear
+  onClear,
+  error,
+  onFileError
 }) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = React.useState<boolean>(false);
@@ -120,10 +128,31 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
       return;
     }
 
-    if (!candidate.type.startsWith(isVideo ? "video/" : "image/")) {
+    const fileList = {
+      0: candidate,
+      length: 1
+    } as unknown as FileList;
+
+    const validation =
+      kind === "image"
+        ? formatValidate.thumbnailFile.validate
+        : formatValidate.videoFile.validate;
+
+    const fileTypeResult = validation.fileType(fileList);
+
+    if (typeof fileTypeResult === "string") {
+      onFileError(fileTypeResult);
       return;
     }
 
+    const fileSizeResult = validation.fileSize(fileList);
+
+    if (typeof fileSizeResult === "string") {
+      onFileError(fileSizeResult);
+      return;
+    }
+
+    onFileError("");
     onSelect(candidate);
   };
 
@@ -132,6 +161,7 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
       inputRef.current.value = "";
     }
 
+    onFileError("");
     onClear();
   };
 
@@ -154,8 +184,10 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
         className="sr-only"
         tabIndex={-1}
         onChange={(event) => {
-          acceptFile(event.currentTarget.files?.[0]);
-          // Cho phép chọn lại cùng một tệp sau khi xóa
+          const files = event.currentTarget.files;
+          acceptFile(files ? files[0] : undefined);
+
+          // Cho phép chọn lại cùng một tệp.
           event.currentTarget.value = "";
         }}
       />
@@ -192,6 +224,7 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
               >
                 {file.name}
               </p>
+
               <p className="mt-0.5 flex items-center gap-1 text-xs text-emerald-600">
                 <CheckCircle2 size={13} />
                 {formatFileSize(file.size)} · Đã sẵn sàng tải lên
@@ -217,9 +250,14 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
         <button
           type="button"
           disabled={disabled}
-          onClick={() => inputRef.current?.click()}
+          onClick={() => {
+            if (inputRef.current) {
+              inputRef.current.click();
+            }
+          }}
           onDragOver={(event) => {
             event.preventDefault();
+
             if (!disabled) {
               setDragging(true);
             }
@@ -228,8 +266,9 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
           onDrop={(event) => {
             event.preventDefault();
             setDragging(false);
+
             if (!disabled) {
-              acceptFile(event.dataTransfer.files?.[0]);
+              acceptFile(event.dataTransfer.files[0]);
             }
           }}
           className={`flex w-full items-center gap-4 rounded-xl border-2 border-dashed px-4 py-4 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 ${
@@ -265,6 +304,13 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
           </span>
         </button>
       )}
+
+      {error && (
+        <p className="mt-2 flex items-center gap-1.5 text-xs text-red-500">
+          <AlertCircle size={14} />
+          {error}
+        </p>
+      )}
     </div>
   );
 };
@@ -283,26 +329,37 @@ const VideoCreateModal: React.FC<VideoCreateModalProps> = ({
   const [category, setCategory] = React.useState<VideoEnum>(VideoEnum.OTHER);
   const [year, setYear] = React.useState<number>(new Date().getFullYear());
   const [displayOrder, setDisplayOrder] = React.useState<number>(0);
+
   const [videoFile, setVideoFile] = React.useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = React.useState<File | null>(null);
+
+  const [videoFileError, setVideoFileError] = React.useState<string>("");
+  const [thumbnailFileError, setThumbnailFileError] =
+    React.useState<string>("");
+
   const [thumbnailPreview, setThumbnailPreview] = React.useState<string>("");
 
   const { mutate, isPending, isError, reset } = CreateVideoProps();
+
   const [notification, setNotification] = React.useState<Notifications>({
     open: false,
     message: "",
     severity: "error"
   });
+
   const categories = Object.entries(VideoEnum).filter(([key]) =>
     Number.isNaN(Number(key))
   );
 
   const yearInvalid = year < 1900 || year > 2100;
   const orderInvalid = displayOrder < 0;
+
   const isValid =
     !!title.trim() &&
     !!videoFile &&
     !!thumbnailFile &&
+    !videoFileError &&
+    !thumbnailFileError &&
     !yearInvalid &&
     !orderInvalid;
 
@@ -338,6 +395,8 @@ const VideoCreateModal: React.FC<VideoCreateModalProps> = ({
     setDisplayOrder(0);
     setVideoFile(null);
     setThumbnailFile(null);
+    setVideoFileError("");
+    setThumbnailFileError("");
     setThumbnailPreview("");
     reset();
   };
@@ -350,7 +409,7 @@ const VideoCreateModal: React.FC<VideoCreateModalProps> = ({
     onClose();
   }, [isPending, onClose]);
 
-  // Đóng bằng phím Esc + khóa cuộn trang nền khi modal mở
+  // Đóng bằng phím Esc + khóa cuộn trang nền khi modal mở.
   React.useEffect(() => {
     if (!open) {
       return;
@@ -393,9 +452,10 @@ const VideoCreateModal: React.FC<VideoCreateModalProps> = ({
         onSuccess: () => {
           setNotification({
             open: true,
-            message: "Create Video Successfully",
+            message: "Tạo video thành công",
             severity: "success"
           });
+
           setTimeout(() => {
             clearForm();
             onClose();
@@ -475,11 +535,13 @@ const VideoCreateModal: React.FC<VideoCreateModalProps> = ({
                       label="Tệp video"
                       required
                       title="Chọn tệp video"
-                      hint="MP4, MOV, WebM..."
-                      accept="video/*"
+                      hint="MP4, MOV, WebM... · Tối đa 100 MB"
+                      accept="video/mp4,video/webm,video/quicktime"
                       file={videoFile}
                       disabled={isPending}
                       isDark={isDark}
+                      error={videoFileError}
+                      onFileError={setVideoFileError}
                       onSelect={setVideoFile}
                       onClear={() => setVideoFile(null)}
                     />
@@ -489,12 +551,14 @@ const VideoCreateModal: React.FC<VideoCreateModalProps> = ({
                       label="Thumbnail"
                       required
                       title="Chọn ảnh thumbnail"
-                      hint="PNG, JPG..."
-                      accept="image/*"
+                      hint="PNG, JPG, WEBP · Tối đa 5 MB"
+                      accept="image/jpeg,image/png,image/webp"
                       file={thumbnailFile}
                       preview={thumbnailPreview}
                       disabled={isPending}
                       isDark={isDark}
+                      error={thumbnailFileError}
+                      onFileError={setThumbnailFileError}
                       onSelect={setThumbnailFile}
                       onClear={() => setThumbnailFile(null)}
                     />
@@ -522,6 +586,7 @@ const VideoCreateModal: React.FC<VideoCreateModalProps> = ({
                         required
                         disabled={isPending}
                       />
+
                       <p className={`mt-1 text-right text-xs ${mutedClass}`}>
                         {title.length}/200
                       </p>
@@ -541,6 +606,7 @@ const VideoCreateModal: React.FC<VideoCreateModalProps> = ({
                         disabled={isPending}
                       />
                     </div>
+
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                       <Select
                         id="video-category"
@@ -598,6 +664,7 @@ const VideoCreateModal: React.FC<VideoCreateModalProps> = ({
                         Năm phải nằm trong khoảng 1900 – 2100.
                       </p>
                     )}
+
                     {orderInvalid && (
                       <p className="text-xs text-red-500">
                         Thứ tự hiển thị không được nhỏ hơn 0.
@@ -651,6 +718,7 @@ const VideoCreateModal: React.FC<VideoCreateModalProps> = ({
                 ) : (
                   <Upload size={16} />
                 )}
+
                 {isPending ? "Đang tạo..." : "Tạo video"}
               </button>
             </footer>
