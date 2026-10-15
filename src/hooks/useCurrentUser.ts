@@ -16,12 +16,21 @@ export const useCurrentUser = () => {
     retry: false
   });
 };
+
 export const useCreateCurrentUser = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["create-profile"],
-    mutationFn: (data: CreateUserProfile) => CreateProfile(data)
+    mutationFn: (data: CreateUserProfile) => CreateProfile(data),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["current-user"]
+      });
+    }
   });
 };
+
 export const useUpdateCurrentUser = () => {
   const queryClient = useQueryClient();
 
@@ -35,3 +44,4 @@ export const useUpdateCurrentUser = () => {
     }
   });
 };
+

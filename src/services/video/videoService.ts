@@ -80,41 +80,13 @@ export const createVideoAPI = async ({
     formData.append("thumbnailFile", thumbnailFile);
   }
 
-  console.log("[CREATE VIDEO] Start");
-  console.log(
-    "[CREATE VIDEO] Endpoint:",
-    API_CONFIG.ENDPOINTS.USER.VIDEO_PROJECT
-  );
-  console.log(
-    "[CREATE VIDEO] Video size:",
-    videoFile ? videoFile.size : 0
-  );
-  console.log(
-    "[CREATE VIDEO] Thumbnail size:",
-    thumbnailFile ? thumbnailFile.size : 0
-  );
-
   try {
     const config = requestConfig("POST", formData);
-
-    // Timeout riêng cho upload video: 5 phút.
-    config.timeout = 300000;
-
-    console.log("[CREATE VIDEO] Sending request");
 
     const response = await fetchBaseResponse<VideoProps | null>(
       API_CONFIG.ENDPOINTS.USER.VIDEO_PROJECT,
       config
     );
-
-    console.log("[CREATE VIDEO] Response status:", response.status);
-    console.log(
-      "[CREATE VIDEO] Server status:",
-      response.serverStatus
-    );
-    console.log("[CREATE VIDEO] Message:", response.message);
-    console.log("[CREATE VIDEO] Success:", response.success);
-    console.log("[CREATE VIDEO] Data:", response.data);
 
     if (
       response.success === false ||
@@ -126,12 +98,8 @@ export const createVideoAPI = async ({
       );
     }
 
-    console.log("[CREATE VIDEO] Success");
-
     return response;
   } catch (error: unknown) {
-    console.error("[CREATE VIDEO] Failed:", error);
-
     if (error instanceof Error) {
       throw error;
     }
@@ -139,7 +107,6 @@ export const createVideoAPI = async ({
     throw new Error("Create Video Failure");
   }
 };
-
 
 export const updateVideoAPI = async (
   id: string,

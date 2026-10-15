@@ -9,7 +9,6 @@ import { notifyUnauthorized } from "../services/auth/authEvents";
 
 const API = axios.create({
   baseURL: API_CONFIG.BASE_URL,
-  timeout: 15000,
   withCredentials: true
 });
 
@@ -70,23 +69,6 @@ export async function fetchBaseResponse<T = unknown>(
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       const response = error.response;
-
-      console.error("[API ERROR] URL:", error.config?.url);
-      console.error("[API ERROR] Method:", error.config?.method);
-      console.error("[API ERROR] Message:", error.message);
-      console.error("[API ERROR] Code:", error.code);
-      console.error(
-        "[API ERROR] Timeout:",
-        error.config?.timeout
-      );
-      console.error(
-        "[API ERROR] HTTP status:",
-        response ? response.status : "NO RESPONSE"
-      );
-      console.error(
-        "[API ERROR] Server response:",
-        response ? response.data : "NO RESPONSE"
-      );
 
       if (response) {
         if (response.status === 401) {
