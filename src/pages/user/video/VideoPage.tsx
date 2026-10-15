@@ -182,51 +182,41 @@ const VideoPage: React.FC = () => {
     });
   };
   const confirmDelete = async () => {
-    if (!pendingDelete) return;
+  if (!pendingDelete) return;
 
-    const ids = [...pendingDelete];
+  const ids = [...pendingDelete];
 
-    try {
-      const responses = await Promise.all(
-        ids.map((id) => deleteVideoMutation.mutateAsync(id))
-      );
+  try {
+    await Promise.all(
+      ids.map((id) => deleteVideoMutation.mutateAsync(id))
+    );
 
-      await queryClient.invalidateQueries({
-        queryKey: ["video"]
-      });
+    await queryClient.invalidateQueries({
+      queryKey: ["video"]
+    });
 
-      setRemovedIds((prev) =>
-        prev.concat(ids.filter((id) => !prev.includes(id)))
-      );
+    setRemovedIds((prev) =>
+      prev.concat(ids.filter((id) => !prev.includes(id)))
+    );
 
-      setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
+    setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
+    setPendingDelete(null);
 
-      setPendingDelete(null);
+    const message =
+      ids.length === 1
+        ? "Xóa video thành công"
+        : `Đã xóa thành công ${ids.length} video`;
 
-      const responseMessage =
-        responses.length === 1 &&
-        typeof responses[0] === "object" &&
-        responses[0] !== null &&
-        "message" in responses[0] &&
-        typeof responses[0].message === "string"
-          ? responses[0].message
-          : ids.length === 1
-            ? "Xóa video thành công"
-            : `Đã xóa thành công ${ids.length} video`;
+    showNotification(message, "success");
+  } catch (error) {
+    console.error("Lỗi khi xóa video:", error);
 
-      showNotification(responseMessage, "success");
-    } catch (error) {
-      console.error("Lỗi khi xóa video:", error);
-
-      let message = "Xóa video thất bại. Vui lòng thử lại.";
-
-      if (error instanceof Error && error.message) {
-        message = error.message;
-      }
-
-      showNotification(message, "error");
-    }
-  };
+    showNotification(
+      "Xóa video thất bại. Vui lòng thử lại.",
+      "error"
+    );
+  }
+};
 
   const clearFilters = () => {
     setSearchTerm("");

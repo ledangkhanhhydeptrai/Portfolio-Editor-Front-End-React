@@ -71,13 +71,15 @@ export const createVideoAPI = async ({
   formData.append("year", String(year));
   if (videoFile) formData.append("videoFile", videoFile);
   if (thumbnailFile) formData.append("thumbnailFile", thumbnailFile);
+  
   try {
     const response = await fetchBaseResponse<VideoProps>(
       `${API_CONFIG.ENDPOINTS.USER.VIDEO_PROJECT}`,
       requestConfig("POST", formData)
     );
-    if (response.status !== HTTP_STATUS.OK)
+    if (response.status !== HTTP_STATUS.OK){
       throw new Error(`HTTP_STATUS:${response.status}`);
+    }
     return response;
   } catch (error) {
     const errors = error as AxiosError<ApiResponse<string>>;
@@ -127,6 +129,7 @@ export const deleteVideoAPI = async (
     return response;
   } catch (error) {
     const errors = error as AxiosError<ApiResponse<string>>;
+    console.log("Error:", errors);
     let message = "Delete Video Failure";
     if (errors.response && errors.response.data && errors.response.data.message)
       message = errors.response.data.message;

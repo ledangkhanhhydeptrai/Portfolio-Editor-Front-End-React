@@ -21,15 +21,27 @@ export const UseSocialLinkById = (id: string) => {
   });
 };
 export const useCreateSocialLink = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["create-social-link"],
-    mutationFn: (data: CreateSocialLink) => CreateSocialLinkAPI(data)
+    mutationFn: (data: CreateSocialLink) => CreateSocialLinkAPI(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["social-link"]
+      });
+    }
   });
 };
 export const useUpdateSocialLink = (id: string) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["update-social-link"],
-    mutationFn: (data: CreateSocialLink) => updateSocialLinkById(id, data)
+    mutationFn: (data: CreateSocialLink) => updateSocialLinkById(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["social-link"]
+      });
+    }
   });
 };
 export const useDeleteSocialLink = () => {

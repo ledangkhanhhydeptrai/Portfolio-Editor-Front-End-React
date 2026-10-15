@@ -168,7 +168,7 @@ const InfoItem: React.FC<InfoItemProps> = ({ icon, label, value, href }) => {
 export default function ProfilePage(): React.JSX.Element {
   const { theme } = useTheme();
   const [isEditOpen, setIsEditOpen] = React.useState(false);
-const [showSuccess, setShowSuccess] = React.useState(false);
+  const [showSuccess, setShowSuccess] = React.useState(false);
   const {
     data: response,
     isLoading,
@@ -503,37 +503,37 @@ const [showSuccess, setShowSuccess] = React.useState(false);
           </div>
         </div>
       </div>
-     <Modal
-  open={isEditOpen}
-  onClose={() => setIsEditOpen(false)}
-  title="Chỉnh sửa hồ sơ"
-  size="2xl"
->
-  <UpdateFormProfile
-    onClose={() => {
-      setIsEditOpen(false);
-      setShowSuccess(true);
-    }}
-  />
-</Modal>
+      <Modal
+        open={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        title="Chỉnh sửa hồ sơ"
+        size="2xl"
+      >
+        <UpdateFormProfile
+          onClose={() => {
+            setIsEditOpen(false);
+            setShowSuccess(true);
+          }}
+        />
+      </Modal>
 
-<Snackbar
-  open={showSuccess}
-  autoHideDuration={3000}
-  onClose={() => setShowSuccess(false)}
-  anchorOrigin={{
-    vertical: "top",
-    horizontal: "right"
-  }}
->
-  <Alert
-    severity="success"
-    variant="filled"
-    onClose={() => setShowSuccess(false)}
-  >
-    Cập nhật hồ sơ thành công!
-  </Alert>
-</Snackbar>
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={3000}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right"
+        }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          onClose={() => setShowSuccess(false)}
+        >
+          Cập nhật hồ sơ thành công!
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

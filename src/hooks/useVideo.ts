@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createVideoAPI,
   deleteVideoAPI,
@@ -21,21 +21,39 @@ export const useVideoById = (id: string) => {
   });
 };
 export const CreateVideoProps = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["create-video"],
-    mutationFn: (data: CreateVideo) => createVideoAPI(data)
+    mutationFn: (data: CreateVideo) => createVideoAPI(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["video"]
+      });
+    }
   });
 };
 export const UpdateVideoProps = (id: string) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["update-video"],
-    mutationFn: (data: UpdateVideo) => updateVideoAPI(id, data)
+    mutationFn: (data: UpdateVideo) => updateVideoAPI(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["video"]
+      });
+    }
   });
 };
 
 export const DeleteVideoProps = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["delete-video"],
-    mutationFn: (id: string) => deleteVideoAPI(id)
+    mutationFn: (id: string) => deleteVideoAPI(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["video"]
+      });
+    }
   });
 };

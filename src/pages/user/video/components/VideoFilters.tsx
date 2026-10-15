@@ -46,10 +46,12 @@ const VideoFilters: React.FC<VideoFiltersProps> = ({
 }) => {
   const categoryOptions = [
     { value: "ALL", label: "Tất cả danh mục" },
-    ...categories.map((category) => ({
-      value: String(category),
-      label: formatCategory(category)
-    })),
+    ...categories
+      .filter((category) => category !== VideoEnum.OTHER)
+      .map((category) => ({
+        value: String(category),
+        label: formatCategory(category)
+      })),
     { value: "OTHER", label: "Danh mục khác" }
   ];
 
