@@ -22,13 +22,18 @@ export const useVideoById = (id: string) => {
 };
 export const CreateVideoProps = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["create-video"],
     mutationFn: (data: CreateVideo) => createVideoAPI(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    retry: false,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: ["video"]
       });
+    },
+    onError: (error) => {
+      console.error("CREATE VIDEO FAILED:", error);
     }
   });
 };
