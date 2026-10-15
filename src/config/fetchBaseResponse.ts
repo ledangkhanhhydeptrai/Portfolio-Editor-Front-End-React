@@ -1,4 +1,8 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+
+import axios, {
+  AxiosRequestConfig,
+  AxiosResponse
+} from "axios";
 
 import { API_CONFIG } from "./api";
 import { notifyUnauthorized } from "../services/auth/authEvents";
@@ -23,8 +27,7 @@ export async function fetchBaseResponse<T = unknown>(
 ): Promise<BaseResponse<T>> {
   try {
     const response: AxiosResponse = await API(url, config);
-
-    const raw = response.data;
+    const raw: unknown = response.data;
 
     if (Array.isArray(raw)) {
       return {
@@ -37,13 +40,21 @@ export async function fetchBaseResponse<T = unknown>(
     }
 
     if (raw !== null && typeof raw === "object") {
+      const body = raw as Record<string, unknown>;
+
       return {
-        status: typeof raw.status === "number" ? raw.status : response.status,
-
-        message: typeof raw.message === "string" ? raw.message : "Success",
-
-        data: typeof raw.data !== "undefined" ? (raw.data as T) : (raw as T),
-
+        status:
+          typeof body.status === "number"
+            ? body.status
+            : response.status,
+        message:
+          typeof body.message === "string"
+            ? body.message
+            : "Success",
+        data:
+          typeof body.data !== "undefined"
+            ? (body.data as T)
+            : (raw as T),
         serverStatus: response.status,
         success: true
       };
@@ -60,23 +71,46 @@ export async function fetchBaseResponse<T = unknown>(
     if (axios.isAxiosError(error)) {
       const response = error.response;
 
+      console.error("[API ERROR] URL:", error.config?.url);
+      console.error("[API ERROR] Method:", error.config?.method);
+      console.error("[API ERROR] Message:", error.message);
+      console.error("[API ERROR] Code:", error.code);
+      console.error(
+        "[API ERROR] Timeout:",
+        error.config?.timeout
+      );
+      console.error(
+        "[API ERROR] HTTP status:",
+        response ? response.status : "NO RESPONSE"
+      );
+      console.error(
+        "[API ERROR] Server response:",
+        response ? response.data : "NO RESPONSE"
+      );
+
       if (response) {
         if (response.status === 401) {
           notifyUnauthorized();
         }
-        const raw = response.data;
+
+        const raw: unknown = response.data;
 
         if (raw !== null && typeof raw === "object") {
+          const body = raw as Record<string, unknown>;
+
           return {
             status:
-              typeof raw.status === "number" ? raw.status : response.status,
-
+              typeof body.status === "number"
+                ? body.status
+                : response.status,
             message:
-              typeof raw.message === "string" ? raw.message : "Request failed",
-
+              typeof body.message === "string"
+                ? body.message
+                : "Request failed",
             data:
-              typeof raw.data !== "undefined" ? (raw.data as T) : (null as T),
-
+              typeof body.data !== "undefined"
+                ? (body.data as T)
+                : (null as T),
             serverStatus: response.status,
             success: false
           };
@@ -91,21 +125,15 @@ export async function fetchBaseResponse<T = unknown>(
         };
       }
 
-      if (error.request) {
-        return {
-          status: 503,
-          message: "Không thể kết nối đến server",
-          data: null as T,
-          serverStatus: 503,
-          success: false
-        };
-      }
-
       return {
-        status: 500,
-        message: error.message || "Request failed",
+        status: 503,
+        message:
+          error.code === "ECONNABORTED" ||
+          error.code === "ETIMEDOUT"
+            ? "Request timeout"
+            : "Không nhận được phản hồi từ server",
         data: null as T,
-        serverStatus: 500,
+        serverStatus: 503,
         success: false
       };
     }

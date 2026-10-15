@@ -1,4 +1,8 @@
-import type { AxiosRequestConfig, Method } from "axios";
+
+import type {
+  AxiosRequestConfig,
+  Method
+} from "axios";
 
 export const requestConfig = (
   method: Method = "GET",
